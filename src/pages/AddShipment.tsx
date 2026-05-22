@@ -14,12 +14,13 @@ const SHIPMENT_TYPE_OPTIONS: DropdownOption[] = [
 
 export const AddShipment: React.FC = () => {
     const {
+        user,
         formData,
         errors,
         isSubmitting,
         handleInputChange,
-        handleDropdownChange,
-        handleUnitChange,
+        handleShipmentTypeChange,
+        handleWeightUnitChange,
         handleSubmit,
     } = useAddShipmentForm();
 
@@ -40,10 +41,9 @@ export const AddShipment: React.FC = () => {
                             name="senderName"
                             label="Sender's Name"
                             placeholder="Enter sender's full name"
-                            value={formData.senderName}
-                            onChange={handleInputChange}
-                            error={errors.senderName}
-                            className="py-2 px-3 pl-10 text-xs rounded-xl md:py-2.5 md:pl-11 md:text-sm transition-all"
+                            value={user?.name || ''}
+                            disabled
+                            className="py-2 px-3 pl-10 text-xs rounded-xl md:py-2.5 md:pl-11 md:text-sm transition-all bg-slate-50 cursor-not-allowed opacity-80"
                             icon={<User className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--color-text-muted)]" />}
                         />
 
@@ -51,10 +51,9 @@ export const AddShipment: React.FC = () => {
                             name="senderMobile"
                             label="Sender's Mobile"
                             placeholder="Enter sender's phone number"
-                            value={formData.senderMobile}
-                            onChange={handleInputChange}
-                            error={errors.senderMobile}
-                            className="py-2 px-3 pl-10 text-xs rounded-xl md:py-2.5 md:pl-11 md:text-sm transition-all"
+                            value={user?.phoneNumber || ''}
+                            disabled
+                            className="py-2 px-3 pl-10 text-xs rounded-xl md:py-2.5 md:pl-11 md:text-sm transition-all bg-slate-50 cursor-not-allowed opacity-80"
                             icon={<Phone className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--color-text-muted)]" />}
                         />
 
@@ -62,10 +61,9 @@ export const AddShipment: React.FC = () => {
                             name="senderAddress"
                             label="Sender's Address"
                             placeholder="Enter sender's physical address"
-                            value={formData.senderAddress}
-                            onChange={handleInputChange}
-                            error={errors.senderAddress}
-                            className="py-2 px-3 pl-10 text-xs rounded-xl md:py-2.5 md:pl-11 md:text-sm transition-all"
+                            value={user?.address || ''}
+                            disabled
+                            className="py-2 px-3 pl-10 text-xs rounded-xl md:py-2.5 md:pl-11 md:text-sm transition-all bg-slate-50 cursor-not-allowed opacity-80"
                             icon={<MapPin className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--color-text-muted)]" />}
                         />
                     </div>
@@ -86,12 +84,12 @@ export const AddShipment: React.FC = () => {
                             icon={<User className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--color-text-muted)]" />}
                         />
                         <InputField
-                            name="recipientMobile"
+                            name="recipientPhoneNumber"
                             label="Recipient's Mobile"
                             placeholder="Enter recipient's phone number"
-                            value={formData.recipientMobile}
+                            value={formData.recipientPhoneNumber}
                             onChange={handleInputChange}
-                            error={errors.recipientMobile}
+                            error={errors.recipientPhoneNumber}
                             className="py-2 px-3 pl-10 text-xs rounded-xl md:py-2.5 md:pl-11 md:text-sm transition-all"
                             icon={<Phone className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--color-text-muted)]" />}
                         />
@@ -112,7 +110,7 @@ export const AddShipment: React.FC = () => {
                 <div className="flex flex-col gap-5 w-full -mt-3 border-t border-[var(--sidebar-border)]/40 pt-2">
                     <div className="flex flex-col gap-2 w-full">
                         <span className="text-xs font-semibold text-slate-500 tracking-wide select-none">
-                            Shipment Type
+                            Package Type
                         </span>
                         <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-2.5 w-full mt-1">
                             {SHIPMENT_TYPE_OPTIONS.map((option) => (
@@ -122,7 +120,7 @@ export const AddShipment: React.FC = () => {
                                     description={option.label.split(' / ')[1]}
                                     value={option.value}
                                     checked={formData.shipmentType === option.value}
-                                    onChange={handleDropdownChange}
+                                    onChange={handleShipmentTypeChange}
                                     icon={option.icon}
                                     name="shipmentType"
                                     // Handles the micro density layouts natively
@@ -143,8 +141,8 @@ export const AddShipment: React.FC = () => {
                             type="number"
                             step="any"
                             name="weight"
-                            label="Shipment Weight"
-                            placeholder="Enter shipment weight"
+                            label="Package Weight"
+                            placeholder="Enter package weight"
                             value={formData.weight}
                             onChange={handleInputChange}
                             error={errors.weight}
@@ -158,7 +156,7 @@ export const AddShipment: React.FC = () => {
                                 { value: 'g', label: 'Grams (g)' },
                             ]}
                             selectedValue={formData.weightUnit}
-                            onChange={handleUnitChange}
+                            onChange={handleWeightUnitChange}
                             placeholder="Select unit"
                         />
                     </div>
