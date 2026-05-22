@@ -1,111 +1,103 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ==========================================
+   Tailwind v4 Modern Theme Configuration
+   ========================================== */
+@theme {
+  /* Font Override */
+  --font-sans: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Custom Premium Colors (Based on #7B57DF) */
+  --color-primary: #7B57DF;
+  --color-primary-hover: #6945C7;
+  --color-primary-glow: rgba(123, 87, 223, 0.25);
+  
+  --color-badge-bg: #7B57DF;
+  --color-badge-text: #ffffff;
+  
+  --color-status-online: #7B57DF;
+}
+
+/* Custom CSS Variables for Dynamic Components (Light/Dark themes) */
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --sidebar-bg: #ffffff;
+  --sidebar-border: #f0edf9;
+  --sidebar-active-bg: #f1edfc;
+  --color-text-primary: #1e1b29;
+  --color-text-muted: #8e8b9a;
+  --color-text-active: #7B57DF;
+  --color-avatar-bg: #f1edfc;
+  --color-avatar-text: #7B57DF;
+  --app-bg: #f8f7fd;
+  --sidebar-shadow: 0 4px 30px rgba(123, 87, 223, 0.02);
+}
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+/* Manual Dark Mode Selector Override */
+:root.dark {
+  --sidebar-bg: #0f0d16;
+  --sidebar-border: #201b33;
+  --sidebar-active-bg: #1d143d;
+  --color-text-primary: #e6e5ec;
+  --color-text-muted: #807d8d;
+  --color-avatar-bg: #1d143d;
+  --app-bg: #07060a;
+  --sidebar-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+}
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
+/* Fallback automatic theme support */
+@media (prefers-color-scheme: dark) {
+  :root:not(.light) {
+    --sidebar-bg: #0f0d16;
+    --sidebar-border: #201b33;
+    --sidebar-active-bg: #1d143d;
+    --color-text-primary: #e6e5ec;
+    --color-text-muted: #807d8d;
+    --color-avatar-bg: #1d143d;
+    --app-bg: #07060a;
+    --sidebar-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+/* ==========================================
+   Global Resets & Normalizations
+   ========================================= */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--app-bg);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  overflow: hidden;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 #root {
-  width: 1126px;
+  width: 100%;
   max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
+  margin: 0;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  box-sizing: border-box;
 }
 
-body {
-  margin: 0;
+/* Scrollbar Customization */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+::-webkit-scrollbar-track {
+  background: transparent;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
+::-webkit-scrollbar-thumb {
+  background: rgba(123, 87, 223, 0.15);
+  border-radius: 99px;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
-}
-
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(123, 87, 223, 0.3);
 }
