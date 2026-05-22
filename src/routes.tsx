@@ -1,7 +1,8 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/layout/Layout';
-import Dashboard from './pages/dashboard/Dashboard';
+import Dashboard from './pages/Dashboard';
+import AddShipment from './pages/AddShipment';
 import { LayoutDashboard, Truck, Settings as SettingsIcon } from 'lucide-react';
 
 export interface SidebarRouteConfig {
@@ -110,6 +111,10 @@ const AppRoutes: React.FC = () => {
 
       <Route element={<Layout name="Settings" />}>
         <Route path="settings" element={<SettingsPage />} />
+      </Route>
+
+      <Route element={<Layout name="Create Shipment" />}>
+        <Route path="add-shipment" element={<AddShipment />} />
       </Route>
 
       <Route path="/404" element={<NotFoundPage />} />

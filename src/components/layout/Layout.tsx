@@ -1,5 +1,5 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 import SideBar from './SideBar';
 import type { LayoutProps } from '../../types/layout.types';
 import useTheme from '../../hooks/useTheme';
@@ -47,9 +47,10 @@ export const Layout: React.FC<LayoutProps> = ({
   name,
 }) => {
   const { theme, toggleTheme } = useTheme();
+  const navigate = useNavigate();
 
   const handleAddShipment = () => {
-    alert('Create Shipment requested! Opening shipment wizard...');
+    navigate('/add-shipment');
   };
 
   const handleLogout = () => {

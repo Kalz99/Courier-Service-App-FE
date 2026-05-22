@@ -1,6 +1,6 @@
 import React from 'react';
 import { Inbox, Package, Truck, Rocket } from 'lucide-react';
-import { StatCard } from '../../components/ui';
+import { StatCard } from '../components/ui';
 
 const STATS = [
     {
@@ -14,14 +14,14 @@ const STATS = [
         id: 'in-transit',
         label: 'In transit',
         value: '2,000',
-        icon: <Package className="w-5.5 h-5.5 text-primary stroke-[2.2]" />,
+        icon: <Truck className="w-5.5 h-5.5 text-primary stroke-[2.2]" />,
         bg: 'bg-primary/10 dark:bg-primary/20'
     },
     {
         id: 'out-for-delivery',
         label: 'Out for delivery',
         value: '60',
-        icon: <Truck className="w-5.5 h-5.5 text-primary stroke-[2.2]" />,
+        icon: <Package className="w-5.5 h-5.5 text-primary stroke-[2.2]" />,
         bg: 'bg-primary/15 dark:bg-primary/30'
     },
     {
@@ -53,4 +53,3 @@ export const Dashboard: React.FC = () => {
 };
 
 export default Dashboard;
-
