@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import API from "../services/apiClient";
+import { registerApi } from "../services/register.service";
 import { useAuth } from "../context/AuthContext";
 
 import type {
@@ -116,10 +116,7 @@ export const useRegisterForm = () => {
         phone: fields.mobile.trim(),
       };
 
-      const response = await API.post(
-        "/auth/register",
-        payload
-      );
+      const response = await registerApi(payload);
 
       const data = response.data?.data || response.data;
 

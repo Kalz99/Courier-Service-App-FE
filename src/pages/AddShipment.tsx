@@ -1,6 +1,6 @@
 import React from 'react';
-import { User, Phone, MapPin, Inbox, Package, Layers, ShieldAlert, HeartPulse } from 'lucide-react';
-import { InputField, RadioButton, type DropdownOption } from '../components/ui';
+import { User, Phone, MapPin, Inbox, Package, Layers, ShieldAlert, HeartPulse, Scale } from 'lucide-react';
+import { InputField, RadioButton, Dropdown, type DropdownOption } from '../components/ui';
 import { Button } from '../components/ui/Button';
 import { useAddShipmentForm } from '../hooks/useAddShipmentForm';
 
@@ -19,6 +19,7 @@ export const AddShipment: React.FC = () => {
         isSubmitting,
         handleInputChange,
         handleDropdownChange,
+        handleUnitChange,
         handleSubmit,
     } = useAddShipmentForm();
 
@@ -108,9 +109,9 @@ export const AddShipment: React.FC = () => {
                 </div>
 
                 {/* Common Bottom Section: Shipment Type & Button */}
-                <div className="flex flex-col gap-5 w-full mt-2 border-t border-[var(--sidebar-border)]/40 pt-6">
+                <div className="flex flex-col gap-5 w-full -mt-3 border-t border-[var(--sidebar-border)]/40 pt-2">
                     <div className="flex flex-col gap-2 w-full">
-                        <span className="text-[10px] md:text-xs font-semibold text-[var(--color-text-muted)] tracking-wide uppercase select-none">
+                        <span className="text-xs font-semibold text-slate-500 tracking-wide select-none">
                             Shipment Type
                         </span>
                         <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-2.5 w-full mt-1">
@@ -134,6 +135,32 @@ export const AddShipment: React.FC = () => {
                                 {errors.shipmentType}
                             </span>
                         )}
+                    </div>
+
+                    {/* Shipment Weight Details */}
+                    <div className="grid grid-cols-1 sm:grid-cols-[1fr_160px] gap-4 w-full mt-2">
+                        <InputField
+                            type="number"
+                            step="any"
+                            name="weight"
+                            label="Shipment Weight"
+                            placeholder="Enter shipment weight"
+                            value={formData.weight}
+                            onChange={handleInputChange}
+                            error={errors.weight}
+                            className="py-2 px-3 pl-10 text-xs rounded-xl md:py-2.5 md:pl-11 md:text-sm transition-all"
+                            icon={<Scale className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--color-text-muted)]" />}
+                        />
+                        <Dropdown
+                            label="Weight Unit"
+                            options={[
+                                { value: 'kg', label: 'Kilograms (kg)' },
+                                { value: 'g', label: 'Grams (g)' },
+                            ]}
+                            selectedValue={formData.weightUnit}
+                            onChange={handleUnitChange}
+                            placeholder="Select unit"
+                        />
                     </div>
 
                     <div className="mt-2 w-full">

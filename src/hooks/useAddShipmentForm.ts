@@ -1,14 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
 
 export const useAddShipmentForm = () => {
+  const { user } = useAuth();
+
   const [formData, setFormData] = useState({
-    senderName: '',
-    senderMobile: '',
-    senderAddress: '',
+    senderName: user?.name || '',
+    senderMobile: user?.phoneNumber || '',
+    senderAddress: user?.address || '',
     recipientName: '',
     recipientMobile: '',
     recipientAddress: '',
     shipmentType: '',
+    weight: '',
+    weightUnit: 'kg',
   });
 
   const [errors, setErrors] = useState({
@@ -19,9 +24,21 @@ export const useAddShipmentForm = () => {
     recipientMobile: '',
     recipientAddress: '',
     shipmentType: '',
+    weight: '',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        senderName: prev.senderName || user.name || '',
+        senderMobile: prev.senderMobile || user.phoneNumber || '',
+        senderAddress: prev.senderAddress || user.address || '',
+      }));
+    }
+  }, [user]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -38,8 +55,21 @@ export const useAddShipmentForm = () => {
     }
   };
 
+  const handleUnitChange = (value: string) => {
+    setFormData((prev) => ({ ...prev, weightUnit: value }));
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Weight validation
+    const weightVal = formData.weight.trim();
+    let weightError = '';
+    if (!weightVal) {
+      weightError = 'Weight is required';
+    } else if (isNaN(Number(weightVal)) || Number(weightVal) <= 0) {
+      weightError = 'Weight must be a positive number';
+    }
 
     // Validation
     const newErrors = {
@@ -50,6 +80,7 @@ export const useAddShipmentForm = () => {
       recipientMobile: formData.recipientMobile.trim() ? '' : "Recipient's mobile number is required",
       recipientAddress: formData.recipientAddress.trim() ? '' : "Recipient's address is required",
       shipmentType: formData.shipmentType ? '' : 'Please select a shipment type',
+      weight: weightError,
     };
 
     if (Object.values(newErrors).some(Boolean)) {
@@ -57,17 +88,22 @@ export const useAddShipmentForm = () => {
       return;
     }
 
+    const weightNum = Number(formData.weight);
+    const weightInKg = formData.weightUnit === 'g' ? weightNum / 1000 : weightNum;
+
     setIsSubmitting(true);
     setTimeout(() => {
-      alert(`Shipment created successfully!\n\nSender: ${formData.senderName}\nRecipient: ${formData.recipientName}\nType: ${formData.shipmentType}`);
+      alert(`Shipment created successfully!\n\nSender: ${formData.senderName}\nRecipient: ${formData.recipientName}\nType: ${formData.shipmentType}\nWeight: ${weightInKg} kg`);
       setFormData({
-        senderName: '',
-        senderMobile: '',
-        senderAddress: '',
+        senderName: user?.name || '',
+        senderMobile: user?.phoneNumber || '',
+        senderAddress: user?.address || '',
         recipientName: '',
         recipientMobile: '',
         recipientAddress: '',
         shipmentType: '',
+        weight: '',
+        weightUnit: 'kg',
       });
       setIsSubmitting(false);
     }, 1000);
@@ -79,6 +115,7 @@ export const useAddShipmentForm = () => {
     isSubmitting,
     handleInputChange,
     handleDropdownChange,
+    handleUnitChange,
     handleSubmit,
   };
 };

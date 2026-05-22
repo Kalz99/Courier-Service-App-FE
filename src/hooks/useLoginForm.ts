@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import API from '../services/apiClient';
+import { loginApi } from '../services/login.service';
 import { useAuth } from '../context/AuthContext';
 import type { LoginFields, FieldErrors } from '../types/login.types';
 
@@ -66,7 +66,7 @@ export const useLoginForm = () => {
     setIsSubmitting(true);
 
     try {
-      const response = await API.post('/auth/login', {
+      const response = await loginApi({
         email: fields.email.trim(),
         password: fields.password,
       });
