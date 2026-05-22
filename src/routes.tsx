@@ -5,6 +5,7 @@ import AdminShipments from './pages/AdminShipment';
 import Dashboard from './pages/Dashboard';
 import AddShipment from './pages/AddShipment';
 import CustomerShipments from './pages/CustomerShipments';
+import Login from './pages/Login';
 import { LayoutDashboard, Truck, Settings as SettingsIcon, Compass } from 'lucide-react';
 
 export interface SidebarRouteConfig {
@@ -84,6 +85,9 @@ const NotFoundPage: React.FC = () => {
 const AppRoutes: React.FC = () => {
     return (
         <Routes>
+            <Route path="/" element={<Navigate to="/login" replace />} />
+            <Route path="/login" element={<Login />} />
+
             <Route element={<Layout name="Dashboard" />}>
                 <Route index element={<Dashboard />} />
                 <Route path="dashboard" element={<Dashboard />} />
