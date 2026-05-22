@@ -3,7 +3,8 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import Dashboard from './pages/Dashboard';
 import AddShipment from './pages/AddShipment';
-import { LayoutDashboard, Truck, Settings as SettingsIcon } from 'lucide-react';
+import CustomerShipments from './pages/CustomerShipments';
+import { LayoutDashboard, Truck, Settings as SettingsIcon, Compass } from 'lucide-react';
 
 export interface SidebarRouteConfig {
   path: string;
@@ -23,6 +24,11 @@ export const sidebarRoutes: SidebarRouteConfig[] = [
     label: 'Shipments',
     icon: Truck,
     badge: 2,
+  },
+  {
+    path: '/customershipments',
+    label: 'Customer Shipments',
+    icon: Compass,
   },
   {
     path: '/settings',
@@ -106,7 +112,7 @@ const AppRoutes: React.FC = () => {
       </Route>
 
       <Route element={<Layout name="Shipments" />}>
-        <Route path="shipments" element={<ShipmentsPage />} />
+        <Route path="shipments" element={<CustomerShipments />} />
       </Route>
 
       <Route element={<Layout name="Settings" />}>
@@ -115,6 +121,10 @@ const AppRoutes: React.FC = () => {
 
       <Route element={<Layout name="Create Shipment" />}>
         <Route path="add-shipment" element={<AddShipment />} />
+      </Route>
+
+      <Route element={<Layout name="Customer Shipments" />}>
+        <Route path="customershipments" element={<CustomerShipments />} />
       </Route>
 
       <Route path="/404" element={<NotFoundPage />} />
