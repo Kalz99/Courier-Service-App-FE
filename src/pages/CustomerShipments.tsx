@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { CustomerShipmentsTable, TrackingModal } from '../components/ui';
-import type { ShipmentItem } from '../components/ui';
 import { useCustomerShipments } from '../hooks/useCustomerShipments';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 

@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 // import { Button } from './Button'; // removed unused Button import
 
-export interface RecipientDetails {
+interface RecipientDetails {
     name: string;
     mobile: string;
     address: string;

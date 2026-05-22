@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { ShipmentItem } from '../components/ui';
+import type { CustomerShipmentItem as ShipmentItem } from '../components/ui';
 
 const MOCK_SHIPMENTS_DATA: ShipmentItem[] = [
   {

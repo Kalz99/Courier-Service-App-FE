@@ -24,143 +24,15 @@ export const AddShipment: React.FC = () => {
 
     return (
         <div className="w-full bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-[32px] shadow-[var(--sidebar-shadow)] p-6 md:p-8 lg:p-10 box-border animate-fade-in transition-all duration-250 mb-6 flex flex-col justify-center grow">
-            <style>{`
-                /* Scoped responsive styles for AddShipment page (Compact & High-Density) */
-                .shipment-input-field,
-                .shipment-submit-btn,
-                .shipment-form [role="radio"] {
-                    transition: all 0.2s ease-in-out !important;
-                }
-
-                /* Mobile sizes (Base Compact) */
-                .shipment-input-field {
-                    padding-top: 8px !important;
-                    padding-bottom: 8px !important;
-                    padding-left: 38px !important;
-                    font-size: 13px !important;
-                    border-radius: 10px !important;
-                }
-                .shipment-form .relative > div:first-child {
-                    left: 12px !important;
-                }
-                .shipment-form .relative > div:first-child svg {
-                    width: 15px !important;
-                    height: 15px !important;
-                }
-                .shipment-submit-btn {
-                    padding-top: 8.5px !important;
-                    padding-bottom: 8.5px !important;
-                    font-size: 13px !important;
-                    border-radius: 10px !important;
-                    width: 100% !important;
-                    height: auto !important;
-                    display: flex !important;
-                }
-                .shipment-form label,
-                .shipment-form .select-none {
-                    font-size: 11px !important;
-                    margin-bottom: 2px !important;
-                }
-
-                /* Radio Button Cards (Horizontal layout) */
-                .shipment-form [role="radio"] {
-                    padding: 12px 14px !important;
-                    border-radius: 14px !important;
-                    max-width: none !important;
-                }
-                .shipment-form [role="radio"] span.text-sm {
-                    font-size: 13px !important;
-                }
-                .shipment-form [role="radio"] span.text-xs {
-                    font-size: 11px !important;
-                    margin-top: 1px !important;
-                }
-
-                /* Medium screens (md) scaling up slightly */
-                @media (min-width: 768px) {
-                    .shipment-input-field {
-                        padding-top: 9.5px !important;
-                        padding-bottom: 9.5px !important;
-                        padding-left: 42px !important;
-                        font-size: 14px !important;
-                        border-radius: 12px !important;
-                    }
-                    .shipment-form .relative > div:first-child {
-                        left: 14px !important;
-                    }
-                    .shipment-form .relative > div:first-child svg {
-                        width: 16px !important;
-                        height: 16px !important;
-                    }
-                    .shipment-submit-btn {
-                        padding-top: 9.5px !important;
-                        padding-bottom: 9.5px !important;
-                        font-size: 14px !important;
-                        border-radius: 12px !important;
-                    }
-                    .shipment-form label,
-                    .shipment-form .select-none {
-                        font-size: 12px !important;
-                        margin-bottom: 3px !important;
-                    }
-                }
-
-                /* Large screens & Desktop (lg/xl) compact sizing */
-                @media (min-width: 1024px) {
-                    .shipment-input-field {
-                        padding-top: 10px !important;
-                        padding-bottom: 10px !important;
-                        padding-left: 44px !important;
-                        font-size: 14px !important;
-                        border-radius: 12px !important;
-                    }
-                    .shipment-form .relative > div:first-child {
-                        left: 14px !important;
-                    }
-                    .shipment-form .relative > div:first-child svg {
-                        width: 16px !important;
-                        height: 16px !important;
-                    }
-                    .shipment-submit-btn {
-                        padding-top: 10px !important;
-                        padding-bottom: 10px !important;
-                        font-size: 14px !important;
-                        border-radius: 12px !important;
-                    }
-                    .shipment-form label,
-                    .shipment-form .select-none {
-                        font-size: 12px !important;
-                        margin-bottom: 4px !important;
-                    }
-                    .shipment-form [role="radio"] {
-                        padding: 14px 16px !important;
-                        border-radius: 16px !important;
-                        max-width: none !important;
-                    }
-                    .shipment-form [role="radio"] span.text-sm {
-                        font-size: 14px !important;
-                    }
-                    .shipment-form [role="radio"] span.text-xs {
-                        font-size: 12px !important;
-                    }
-                }
-
-                .shipment-form h3 {
-                    font-size: 13px !important;
-                    font-weight: 700 !important;
-                    letter-spacing: 0.05em !important;
-                }
-            `}</style>
-
             <form
                 onSubmit={handleSubmit}
-                className="shipment-form flex flex-col gap-6 w-full max-w-[1200px] mx-auto bg-transparent border-none p-0 shadow-none"
+                className="flex flex-col gap-6 w-full max-w-[1200px] mx-auto bg-transparent border-none p-0 shadow-none transition-all duration-200"
             >
                 {/* Two Column Grid for Senders and Recipients */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10 w-full">
                     {/* Left Column: Sender's Details */}
                     <div className="flex flex-col gap-4 w-full">
-                        <h3 className="text-sm font-bold text-primary uppercase tracking-wider border-b border-[var(--sidebar-border)]/70 pb-2 mb-1">
+                        <h3 className="text-xs md:text-sm font-bold text-primary uppercase tracking-wider border-b border-[var(--sidebar-border)]/70 pb-2 mb-1">
                             Sender's Details
                         </h3>
                         <InputField
@@ -170,8 +42,8 @@ export const AddShipment: React.FC = () => {
                             value={formData.senderName}
                             onChange={handleInputChange}
                             error={errors.senderName}
-                            className="shipment-input-field"
-                            icon={<User className="w-4 h-4 text-[var(--color-text-muted)]" />}
+                            className="py-2 px-3 pl-10 text-xs rounded-xl md:py-2.5 md:pl-11 md:text-sm transition-all"
+                            icon={<User className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--color-text-muted)]" />}
                         />
 
                         <InputField
@@ -181,8 +53,8 @@ export const AddShipment: React.FC = () => {
                             value={formData.senderMobile}
                             onChange={handleInputChange}
                             error={errors.senderMobile}
-                            className="shipment-input-field"
-                            icon={<Phone className="w-4 h-4 text-[var(--color-text-muted)]" />}
+                            className="py-2 px-3 pl-10 text-xs rounded-xl md:py-2.5 md:pl-11 md:text-sm transition-all"
+                            icon={<Phone className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--color-text-muted)]" />}
                         />
 
                         <InputField
@@ -192,14 +64,14 @@ export const AddShipment: React.FC = () => {
                             value={formData.senderAddress}
                             onChange={handleInputChange}
                             error={errors.senderAddress}
-                            className="shipment-input-field"
-                            icon={<MapPin className="w-4 h-4 text-[var(--color-text-muted)]" />}
+                            className="py-2 px-3 pl-10 text-xs rounded-xl md:py-2.5 md:pl-11 md:text-sm transition-all"
+                            icon={<MapPin className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--color-text-muted)]" />}
                         />
                     </div>
 
                     {/* Right Column: Recipient's Details */}
                     <div className="flex flex-col gap-4 w-full">
-                        <h3 className="text-sm font-bold text-primary uppercase tracking-wider border-b border-[var(--sidebar-border)]/70 pb-2 mb-1">
+                        <h3 className="text-xs md:text-sm font-bold text-primary uppercase tracking-wider border-b border-[var(--sidebar-border)]/70 pb-2 mb-1">
                             Recipient's Details
                         </h3>
                         <InputField
@@ -209,8 +81,8 @@ export const AddShipment: React.FC = () => {
                             value={formData.recipientName}
                             onChange={handleInputChange}
                             error={errors.recipientName}
-                            className="shipment-input-field"
-                            icon={<User className="w-4 h-4 text-[var(--color-text-muted)]" />}
+                            className="py-2 px-3 pl-10 text-xs rounded-xl md:py-2.5 md:pl-11 md:text-sm transition-all"
+                            icon={<User className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--color-text-muted)]" />}
                         />
                         <InputField
                             name="recipientMobile"
@@ -219,8 +91,8 @@ export const AddShipment: React.FC = () => {
                             value={formData.recipientMobile}
                             onChange={handleInputChange}
                             error={errors.recipientMobile}
-                            className="shipment-input-field"
-                            icon={<Phone className="w-4 h-4 text-[var(--color-text-muted)]" />}
+                            className="py-2 px-3 pl-10 text-xs rounded-xl md:py-2.5 md:pl-11 md:text-sm transition-all"
+                            icon={<Phone className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--color-text-muted)]" />}
                         />
                         <InputField
                             name="recipientAddress"
@@ -229,8 +101,8 @@ export const AddShipment: React.FC = () => {
                             value={formData.recipientAddress}
                             onChange={handleInputChange}
                             error={errors.recipientAddress}
-                            className="shipment-input-field"
-                            icon={<MapPin className="w-4 h-4 text-[var(--color-text-muted)]" />}
+                            className="py-2 px-3 pl-10 text-xs rounded-xl md:py-2.5 md:pl-11 md:text-sm transition-all"
+                            icon={<MapPin className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--color-text-muted)]" />}
                         />
                     </div>
                 </div>
@@ -238,7 +110,7 @@ export const AddShipment: React.FC = () => {
                 {/* Common Bottom Section: Shipment Type & Button */}
                 <div className="flex flex-col gap-5 w-full mt-2 border-t border-[var(--sidebar-border)]/40 pt-6">
                     <div className="flex flex-col gap-2 w-full">
-                        <span className="text-xs font-semibold text-[var(--color-text-muted)] tracking-wide uppercase select-none shipment-form-label">
+                        <span className="text-[10px] md:text-xs font-semibold text-[var(--color-text-muted)] tracking-wide uppercase select-none">
                             Shipment Type
                         </span>
                         <div className="grid grid-cols-1 sm:grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-2.5 w-full mt-1">
@@ -252,6 +124,8 @@ export const AddShipment: React.FC = () => {
                                     onChange={handleDropdownChange}
                                     icon={option.icon}
                                     name="shipmentType"
+                                    // Handles the micro density layouts natively
+                                    className="p-3 lg:p-4 rounded-[14px] lg:rounded-[16px] transition-all duration-200"
                                 />
                             ))}
                         </div>
@@ -266,7 +140,7 @@ export const AddShipment: React.FC = () => {
                         <Button
                             type="submit"
                             disabled={isSubmitting}
-                            className="shipment-submit-btn max-md:rounded-xl max-md:w-full max-md:h-auto max-md:py-2.5 max-md:px-3 max-md:flex"
+                            className="w-full h-auto py-2.5 px-4 text-xs font-medium rounded-xl md:py-3 md:text-sm flex items-center justify-center transition-all duration-200"
                         >
                             {isSubmitting ? 'Creating Shipment...' : 'Create Shipment'}
                         </Button>
