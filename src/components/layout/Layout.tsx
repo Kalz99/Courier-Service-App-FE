@@ -3,6 +3,7 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import SideBar from './SideBar';
 import type { LayoutProps } from '../../types/layout.types';
 import useTheme from '../../hooks/useTheme';
+import { useAuth } from '../../context/AuthContext';
 
 const SunIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
@@ -48,6 +49,14 @@ export const Layout: React.FC<LayoutProps> = ({
 }) => {
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const sidebarUser = user
+    ? {
+        name: user.name,
+        role: user.role === 'admin' ? 'Administrator' : 'Customer',
+      }
+    : undefined;
 
   const handleAddShipment = () => {
     navigate('/add-shipment');
@@ -55,7 +64,7 @@ export const Layout: React.FC<LayoutProps> = ({
 
   const handleLogout = () => {
     if (confirm('Are you sure you want to log out?')) {
-      alert('Logging out...');
+      logout();
     }
   };
 
@@ -65,6 +74,7 @@ export const Layout: React.FC<LayoutProps> = ({
       <SideBar
         onAddShipment={handleAddShipment}
         onLogout={handleLogout}
+        user={sidebarUser}
       />
 
       {/* Main Page Area */}

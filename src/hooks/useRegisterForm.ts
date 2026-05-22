@@ -1,158 +1,169 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+import API from "../services/apiClient";
+import { useAuth } from "../context/AuthContext";
+
+import type {
+  RegisterFields,
+  FieldErrors,
+} from "../types/register.types";
+
+const INITIAL_FIELDS: RegisterFields = {
+  fullName: "",
+  email: "",
+  password: "",
+  mobile: "",
+  address: "",
+  businessName: "",
+};
 
 export const useRegisterForm = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  // Form field states
-  const [fullName, setFullName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [mobile, setMobile] = useState('');
-  const [address, setAddress] = useState('');
-  const [businessName, setBusinessName] = useState('');
+  const [fields, setFields] =
+    useState<RegisterFields>(INITIAL_FIELDS);
 
-  // Form validation errors
-  const [fullNameError, setFullNameError] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const [mobileError, setMobileError] = useState('');
-  const [addressError, setAddressError] = useState('');
-  const [businessNameError, setBusinessNameError] = useState('');
+  const [errors, setErrors] =
+    useState<FieldErrors>({});
 
-  // Submit loading state indicator
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSubmitting, setIsSubmitting] =
+    useState(false);
 
-  // Reactive change handlers that clear corresponding error flags
-  const handleFullNameChange = (val: string) => {
-    setFullName(val);
-    if (fullNameError) setFullNameError('');
-  };
+  const handleFieldChange = (
+    key: keyof RegisterFields,
+    value: string
+  ) => {
+    setFields((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
 
-  const handleEmailChange = (val: string) => {
-    setEmail(val);
-    if (emailError) setEmailError('');
-  };
-
-  const handlePasswordChange = (val: string) => {
-    setPassword(val);
-    if (passwordError) setPasswordError('');
-  };
-
-  const handleMobileChange = (val: string) => {
-    setMobile(val);
-    if (mobileError) setMobileError('');
-  };
-
-  const handleAddressChange = (val: string) => {
-    setAddress(val);
-    if (addressError) setAddressError('');
-  };
-
-  const handleBusinessNameChange = (val: string) => {
-    setBusinessName(val);
-    if (businessNameError) setBusinessNameError('');
-  };
-
-  // Comprehensive client-side form validation
-  const validateForm = (): boolean => {
-    let isValid = true;
-
-    // Full Name check
-    if (!fullName.trim()) {
-      setFullNameError('Full name is required');
-      isValid = false;
-    } else {
-      setFullNameError('');
+    // Clear field error while typing
+    if (errors[key]) {
+      setErrors((prev) => ({
+        ...prev,
+        [key]: "",
+      }));
     }
 
-    // Email check
-    if (!email.trim()) {
-      setEmailError('Email address is required');
-      isValid = false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setEmailError('Please enter a valid email address');
-      isValid = false;
-    } else {
-      setEmailError('');
+    // Clear global error
+    if (errors.global) {
+      setErrors((prev) => ({
+        ...prev,
+        global: "",
+      }));
     }
-
-    // Password check
-    if (!password) {
-      setPasswordError('Password is required');
-      isValid = false;
-    } else if (password.length < 6) {
-      setPasswordError('Password must be at least 6 characters long');
-      isValid = false;
-    } else {
-      setPasswordError('');
-    }
-
-    // Mobile Number check
-    if (!mobile.trim()) {
-      setMobileError('Mobile number is required');
-      isValid = false;
-    } else if (!/^\+?[0-9\s\-()]{7,16}$/.test(mobile.trim())) {
-      setMobileError('Please enter a valid mobile number');
-      isValid = false;
-    } else {
-      setMobileError('');
-    }
-
-    // Address check
-    if (!address.trim()) {
-      setAddressError('Address is required');
-      isValid = false;
-    } else {
-      setAddressError('');
-    }
-
-    // Business Name check
-    if (!businessName.trim()) {
-      setBusinessNameError('Business name is required');
-      isValid = false;
-    } else {
-      setBusinessNameError('');
-    }
-
-    return isValid;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateForm = () => {
+    const newErrors: FieldErrors = {};
+
+    if (!fields.fullName.trim()) {
+      newErrors.fullName = "Full name is required";
+    }
+
+    if (!fields.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email)
+    ) {
+      newErrors.email = "Please enter a valid email";
+    }
+
+    if (!fields.password.trim()) {
+      newErrors.password = "Password is required";
+    } else if (fields.password.length < 6) {
+      newErrors.password =
+        "Password must be at least 6 characters";
+    }
+
+    if (!fields.mobile.trim()) {
+      newErrors.mobile = "Phone number is required";
+    }
+
+    if (!fields.address.trim()) {
+      newErrors.address = "Address is required";
+    }
+
+    if (!fields.businessName.trim()) {
+      newErrors.businessName =
+        "Business name is required";
+    }
+
+    setErrors(newErrors);
+
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (
+    e: React.FormEvent<HTMLFormElement>
+  ) => {
     e.preventDefault();
 
     if (!validateForm()) return;
 
     setIsSubmitting(true);
 
-    // Simulate premium signup network latency
-    setTimeout(() => {
+    try {
+      const payload = {
+        name: fields.fullName.trim(),
+        email: fields.email.trim(),
+        password: fields.password,
+        address: fields.address.trim(),
+        businessName: fields.businessName.trim(),
+        phone: fields.mobile.trim(),
+      };
+
+      const response = await API.post(
+        "/auth/register",
+        payload
+      );
+
+      const data = response.data?.data || response.data;
+
+      if (!data?.user || !data?.accessToken) {
+        throw new Error(
+          "Invalid server response"
+        );
+      }
+
+      alert(response.data?.message || "User registered successfully");
+
+      login(data.user, data.accessToken);
+
+      navigate("/dashboard");
+    } catch (error: unknown) {
+      let message =
+        "Registration failed. Please try again.";
+
+      if (
+        typeof error === "object" &&
+        error !== null &&
+        "response" in error
+      ) {
+        const err = error as any;
+
+        message =
+          err.response?.data?.message ||
+          err.response?.data?.error ||
+          message;
+      }
+
+      setErrors({
+        global: message,
+      });
+    } finally {
       setIsSubmitting(false);
-      alert('Registration successful! Welcome to ShipSync.');
-      navigate('/login');
-    }, 1500);
+    }
   };
 
   return {
-    fullName,
-    email,
-    password,
-    mobile,
-    address,
-    businessName,
-    fullNameError,
-    emailError,
-    passwordError,
-    mobileError,
-    addressError,
-    businessNameError,
+    fields,
+    errors,
     isSubmitting,
-    handleFullNameChange,
-    handleEmailChange,
-    handlePasswordChange,
-    handleMobileChange,
-    handleAddressChange,
-    handleBusinessNameChange,
+    handleFieldChange,
     handleSubmit,
   };
 };
