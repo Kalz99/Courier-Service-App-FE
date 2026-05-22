@@ -59,7 +59,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
   return (
     <div ref={containerRef} className={`flex flex-col gap-1.5 w-full relative ${className}`}>
       {label && (
-        <span className="text-xs font-semibold text-[var(--color-text-muted)] tracking-wide uppercase select-none">
+        <span className="text-xs font-semibold text-slate-500 tracking-wide select-none">
           {label}
         </span>
       )}
@@ -68,8 +68,8 @@ export const Dropdown: React.FC<DropdownProps> = ({
           type="button"
           onClick={() => !disabled && setIsOpen(!isOpen)}
           disabled={disabled}
-          className={`flex items-center justify-between w-full py-2.5 px-4 rounded-xl border border-[var(--sidebar-border)] bg-[var(--sidebar-bg)] text-[var(--color-text-primary)] text-sm font-medium outline-none transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
-            isOpen ? 'border-primary ring-4 ring-[var(--color-primary-glow)]' : ''
+          className={`flex items-center justify-between w-full py-2.5 px-4 rounded-xl border border-slate-200 bg-white text-slate-800 text-sm font-medium outline-none transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
+            isOpen ? 'border-primary ring-4 ring-primary/10' : ''
           } ${
             error
               ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/10'
@@ -78,12 +78,12 @@ export const Dropdown: React.FC<DropdownProps> = ({
         >
           <span className="flex items-center gap-2.5 truncate">
             {selectedOption?.icon}
-            <span className={selectedOption ? '' : 'text-[var(--color-text-muted)] font-normal'}>
+            <span className={selectedOption ? '' : 'text-slate-400 font-normal'}>
               {selectedOption ? selectedOption.label : placeholder}
             </span>
           </span>
           <ChevronDown
-            className={`w-4 h-4 text-[var(--color-text-muted)] transition-transform duration-250 shrink-0 ${
+            className={`w-4 h-4 text-slate-400 transition-transform duration-250 shrink-0 ${
               isOpen ? 'rotate-180 text-primary' : ''
             }`}
           />
@@ -91,9 +91,9 @@ export const Dropdown: React.FC<DropdownProps> = ({
 
         {/* Dropdown Popover */}
         {isOpen && (
-          <div className="absolute left-0 right-0 mt-2 bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-2xl shadow-[0_10px_30px_rgba(123,87,223,0.15)] dark:shadow-[0_10px_30px_rgba(0,0,0,0.4)] overflow-hidden z-50 animate-fade-in py-1.5 max-h-60 overflow-y-auto">
+          <div className="absolute left-0 right-0 mt-2 bg-white border border-slate-200 rounded-2xl shadow-[0_10px_30px_rgba(123,87,223,0.15)] overflow-hidden z-50 animate-fade-in py-1.5 max-h-60 overflow-y-auto">
             {options.length === 0 ? (
-              <div className="py-2.5 px-4 text-sm text-[var(--color-text-muted)] text-center">
+              <div className="py-2.5 px-4 text-sm text-slate-400 text-center">
                 No options available
               </div>
             ) : (
@@ -107,7 +107,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
                     className={`flex items-center gap-2.5 w-full py-2.5 px-4 text-sm font-medium text-left border-none outline-none cursor-pointer transition-all duration-150 ${
                       isSelected
                         ? 'bg-[var(--sidebar-active-bg)] text-primary font-semibold'
-                        : 'text-[var(--color-text-primary)] hover:bg-[var(--sidebar-active-bg)]/50 hover:text-primary'
+                        : 'text-slate-700 hover:bg-slate-50 hover:text-primary'
                     }`}
                   >
                     {option.icon}
