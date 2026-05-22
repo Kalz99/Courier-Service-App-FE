@@ -6,6 +6,7 @@ import Dashboard from './pages/Dashboard';
 import AddShipment from './pages/AddShipment';
 import CustomerShipments from './pages/CustomerShipments';
 import Login from './pages/Login';
+import Register from './pages/Register';
 import { LayoutDashboard, Truck, Settings as SettingsIcon, Compass } from 'lucide-react';
 
 export interface SidebarRouteConfig {
@@ -87,6 +88,7 @@ const AppRoutes: React.FC = () => {
         <Routes>
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
 
             <Route element={<Layout name="Dashboard" />}>
                 <Route index element={<Dashboard />} />

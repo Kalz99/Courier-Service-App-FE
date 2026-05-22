@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Mail, Lock, Shield, User, ArrowRight } from 'lucide-react';
 import { InputField, Dropdown } from '../components/ui';
 import { useLoginForm } from '../hooks/useLoginForm';
@@ -130,8 +131,17 @@ export const Login: React.FC = () => {
           </button>
         </form>
 
-        {/* Footer Accent */}
-        <div className="text-center">
+        {/* Link to Register */}
+        <div className="text-center flex flex-col gap-2.5">
+          <p className="text-xs text-[var(--color-text-muted)]">
+            Don't have an account?{' '}
+            <Link 
+              to="/register" 
+              className="text-primary font-semibold hover:underline transition-all"
+            >
+              Create Account
+            </Link>
+          </p>
           <p className="text-[11px] text-[var(--color-text-muted)]">
             Secured end-to-end logistics workspace portal.
           </p>
