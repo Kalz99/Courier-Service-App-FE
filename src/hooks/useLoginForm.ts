@@ -1,95 +1,131 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import API from '../services/apiClient';
+import { useAuth } from '../context/AuthContext';
+import type { LoginFields, FieldErrors } from '../types/login.types';
+
+const INITIAL_FIELDS: LoginFields = {
+  email: '',
+  password: '',
+  role: 'customer',
+};
 
 export const useLoginForm = () => {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
-  // Form field states
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('customer'); // Default to Customer
-
-  // Form validation errors
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  
-  // Submit state indicator
+  const [fields, setFields] = useState<LoginFields>(INITIAL_FIELDS);
+  const [errors, setErrors] = useState<FieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Input handlers that automatically clear errors
-  const handleEmailChange = (val: string) => {
-    setEmail(val);
-    if (emailError) setEmailError('');
+  const handleFieldChange = (key: keyof LoginFields, value: string) => {
+    setFields((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+
+    if (errors[key]) {
+      setErrors((prev) => ({
+        ...prev,
+        [key]: '',
+      }));
+    }
+
+    if (errors.global) {
+      setErrors((prev) => ({
+        ...prev,
+        global: '',
+      }));
+    }
   };
 
-  const handlePasswordChange = (val: string) => {
-    setPassword(val);
-    if (passwordError) setPasswordError('');
-  };
-
-  const handleRoleChange = (val: string) => {
-    setRole(val);
-  };
-
-  // Live and on-submit validation checks
   const validateForm = (): boolean => {
-    let isValid = true;
-    
-    // Email format checks
-    if (!email.trim()) {
-      setEmailError('Email address is required');
-      isValid = false;
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setEmailError('Please enter a valid email address');
-      isValid = false;
-    } else {
-      setEmailError('');
+    const newErrors: FieldErrors = {};
+
+    if (!fields.email.trim()) {
+      newErrors.email = 'Email address is required';
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fields.email)) {
+      newErrors.email = 'Please enter a valid email address';
     }
 
-    // Password strength check
-    if (!password) {
-      setPasswordError('Password is required');
-      isValid = false;
-    } else if (password.length < 6) {
-      setPasswordError('Password must be at least 6 characters long');
-      isValid = false;
-    } else {
-      setPasswordError('');
+    if (!fields.password) {
+      newErrors.password = 'Password is required';
+    } else if (fields.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters long';
     }
 
-    return isValid;
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setIsSubmitting(true);
-    
-    // Simulate premium API latency delay
-    setTimeout(() => {
-      setIsSubmitting(false);
-      
-      // Perform mock redirection based on role select
-      if (role === 'admin') {
-        navigate('/dashboard');
-      } else {
-        navigate('/customershipments');
+
+    try {
+      const response = await API.post('/auth/login', {
+        email: fields.email.trim(),
+        password: fields.password,
+      });
+
+      const data = response.data?.data || response.data;
+
+      if (!data?.user || !data?.accessToken) {
+        throw new Error('Invalid server response');
       }
-    }, 1200);
+
+      if (data.user.role !== fields.role) {
+        throw new Error(
+          `Unauthorized: This account does not have access to the ${fields.role === 'admin' ? 'Admin & Operations' : 'Customer Portal'
+          }.`
+        );
+      }
+
+      const mappedUser = {
+        id: Number(data.user.id),
+        name: data.user.name,
+        email: data.user.email,
+        address: data.user.address,
+        businessName: data.user.businessName,
+        phoneNumber: data.user.phone || data.user.phoneNumber || '',
+        role: data.user.role,
+      };
+
+      alert(response.data?.message || 'Login successful');
+
+      login(mappedUser, data.accessToken);
+
+      if (mappedUser.role === 'admin') {
+        navigate('/dashboard-admin');
+      } else {
+        navigate('/dashboard');
+      }
+    } catch (error: unknown) {
+      let message = 'Login failed. Please try again.';
+
+      if (typeof error === 'object' && error !== null && 'response' in error) {
+        const err = error as any;
+        message = err.response?.data?.message || err.response?.data?.error || message;
+      } else if (error instanceof Error) {
+        message = error.message;
+      }
+
+      setErrors({
+        global: message,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return {
-    email,
-    password,
-    role,
-    emailError,
-    passwordError,
+    fields,
+    errors,
     isSubmitting,
-    handleEmailChange,
-    handlePasswordChange,
-    handleRoleChange,
+    handleFieldChange,
     handleSubmit,
   };
 };
