@@ -22,6 +22,18 @@ export const SideBar: React.FC<SideBarProps> = ({
 }) => {
   const location = useLocation();
 
+  const isCustomer = user.role.toLowerCase() === 'customer';
+
+  const filteredRoutes = sidebarRoutes.filter((route) => {
+    if (isCustomer) {
+      // Customers should only see Dashboard, My Shipments (/customershipments), and Settings
+      return route.path !== '/shipments';
+    } else {
+      // Admins should only see Dashboard, Shipments (/shipments), and Settings
+      return route.path !== '/customershipments';
+    }
+  });
+
   return (
     <aside className="flex flex-col w-[80px] md:w-[230px] p-3 md:py-6 md:px-4 h-[calc(100vh-2rem)] my-4 ml-4 bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-[24px] select-none shadow-[var(--sidebar-shadow)] z-50 transition-all duration-250 shrink-0">
 
@@ -39,7 +51,7 @@ export const SideBar: React.FC<SideBarProps> = ({
       {/* Nav List Wrapper */}
       <nav className="grow mb-6">
         <ul className="flex flex-col gap-2 list-none p-0 m-0">
-          {sidebarRoutes.map((route) => {
+          {filteredRoutes.map((route) => {
             const Icon = route.icon;
             const isActive = location.pathname === route.path ||
               (route.path === '/dashboard' && (location.pathname === '/' || location.pathname === '/dashboard'));
@@ -76,10 +88,12 @@ export const SideBar: React.FC<SideBarProps> = ({
         </ul>
       </nav>
 
-      {/* Call to Action: Add a Shipment */}
-      <div className="p-1 mb-6">
-        <Button onClick={onAddShipment}>Add a shipment</Button>
-      </div>
+      {/* Call to Action: Add a Shipment (Only for Customers!) */}
+      {isCustomer && (
+        <div className="p-1 mb-6">
+          <Button onClick={onAddShipment}>Add a shipment</Button>
+        </div>
+      )}
 
       {/* Footer Profile Section */}
       <div className="border-t border-[var(--sidebar-border)] pt-6">

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/layout/Layout';
+import ProtectedRoute from './components/layout/ProtectedRoute';
 import AdminShipments from './pages/AdminShipment';
 import Dashboard from './pages/Dashboard';
 import AddShipment from './pages/AddShipment';
@@ -90,25 +91,33 @@ const AppRoutes: React.FC = () => {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
 
-            <Route element={<Layout name="Dashboard" />}>
-                <Route index element={<Dashboard />} />
-                <Route path="dashboard" element={<Dashboard />} />
-            </Route>
+            {/* Guarded Routes - Accessible to all Authenticated Users */}
+            <Route element={<ProtectedRoute allowedRoles={['admin', 'customer']} />}>
+                <Route element={<Layout name="Dashboard" />}>
+                    <Route index element={<Dashboard />} />
+                    <Route path="dashboard" element={<Dashboard />} />
+                </Route>
 
-            <Route element={<Layout name="Shipments" />}>
-                <Route path="shipments" element={<AdminShipments />} />
-            </Route>
+                <Route element={<Layout name="Settings" />}>
+                    <Route path="settings" element={<SettingsPage />} />
+                </Route>
 
-            <Route element={<Layout name="Settings" />}>
-                <Route path="settings" element={<SettingsPage />} />
-            </Route>
+                {/* Admin-only Guarded Routes */}
+                <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+                    <Route element={<Layout name="Shipments" />}>
+                        <Route path="shipments" element={<AdminShipments />} />
+                    </Route>
+                </Route>
 
-            <Route element={<Layout name="Create Shipment" />}>
-                <Route path="add-shipment" element={<AddShipment />} />
-            </Route>
-
-            <Route element={<Layout name="Customer Shipments" />}>
-                <Route path="customershipments" element={<CustomerShipments />} />
+                {/* Customer-only Guarded Routes */}
+                <Route element={<ProtectedRoute allowedRoles={['customer']} />}>
+                    <Route element={<Layout name="Create Shipment" />}>
+                        <Route path="add-shipment" element={<AddShipment />} />
+                    </Route>
+                    <Route element={<Layout name="Customer Shipments" />}>
+                        <Route path="customershipments" element={<CustomerShipments />} />
+                    </Route>
+                </Route>
             </Route>
 
             <Route path="/404" element={<NotFoundPage />} />
