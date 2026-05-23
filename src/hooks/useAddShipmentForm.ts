@@ -1,25 +1,10 @@
 import React, { useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { createShipmentApi } from '../services/shipment.service';
+import { createShipmentApi } from '../services/newshipment.service';
 
 
-export interface ShipmentFormData {
-  recipientName: string;
-  recipientPhoneNumber: string;
-  recipientAddress: string;
-  shipmentType: string;
-  weight: string;
-  weightUnit: 'kg' | 'g';
-}
+import type { ShipmentFormData, ShipmentFormErrors } from "../types/shipment.types";
 
-
-export interface ShipmentFormErrors {
-  recipientName: string;
-  recipientPhoneNumber: string;
-  recipientAddress: string;
-  shipmentType: string;
-  weight: string;
-}
 
 const INITIAL_FORM_DATA: ShipmentFormData = {
   recipientName: '',

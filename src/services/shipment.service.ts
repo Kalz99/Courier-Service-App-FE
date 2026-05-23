@@ -1,53 +1,12 @@
 import API from "./apiClient";
 
-export type ShipmentStatus =
-    | "Pending"
-    | "In Transit"
-    | "Delivered"
-    | "Out For Delivery";
+import type {
+    Shipment,
+    ShipmentApiResponse,
+    GetShipmentsResponse,
+} from "../types/customershipment.types";
+import type { CreateShipmentPayload } from "../types/shipment.types";
 
-export interface Shipment {
-    id: string;
-    trackingNumber: string;
-    recipient: {
-        name: string;
-        mobile: string;
-        address: string;
-    };
-    shipmentType: string;
-    packageType: string;
-    packageName: string;
-    weight: string;
-    status: "pending" | "in_transit" | "out_for_delivery" | "delivered";
-    date: string;
-}
-
-interface ShipmentApiResponse {
-    id: string;
-    tracking_number: string;
-    recipient_name: string;
-    recipient_address: string;
-    recipient_phone_number: string;
-    shipment_type: string;
-    weight: string;
-    status: string;
-    user_id: string;
-    created_at: string;
-}
-
-interface GetShipmentsResponse {
-    success: boolean;
-    message: string;
-    data: ShipmentApiResponse[];
-}
-
-export interface CreateShipmentPayload {
-    recipientName: string;
-    recipientPhoneNumber: string;
-    recipientAddress: string;
-    shipmentType: string;
-    weight: number;
-}
 
 const SHIPMENT_TYPE_LABELS: Record<string, string> = {
     document: "Document / Letter",
@@ -87,9 +46,12 @@ const mapShipment = (
     };
 };
 
-export const getCustomerShipmentsApi = async (): Promise<Shipment[]> => {
+export const getCustomerShipmentsApi = async (tracking?: string): Promise<Shipment[]> => {
     const response = await API.get<GetShipmentsResponse>(
-        "/shipments/get-shipment"
+        "/shipments/get-shipment",
+        {
+            params: tracking ? { tracking } : undefined,
+        }
     );
     return response.data.data.map(mapShipment);
 };

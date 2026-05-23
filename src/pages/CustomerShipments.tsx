@@ -17,12 +17,23 @@ import { useCustomerShipments } from "../hooks/useCustomerShipments";
 export const CustomerShipments: React.FC =
     () => {
         const {
-            shipments,
             loading,
             error,
+            searchTerm,
+            setSearchTerm,
+            statusFilter,
+            setStatusFilter,
+            copiedId,
+            handleCopy,
+            currentPage,
+            setCurrentPage,
+            totalPages,
+            paginatedShipments,
+            startIndex,
+            endIndex,
             refreshShipments,
-        } =
-            useCustomerShipments();
+            shipments,
+        } = useCustomerShipments();
 
         const [
             selectedTrackingNumber,
@@ -88,15 +99,21 @@ export const CustomerShipments: React.FC =
                 )}
 
                 <CustomerShipmentsTable
-                    shipments={
-                        shipments
-                    }
-                    isLoading={
-                        loading
-                    }
-                    onTrackShipment={
-                        handleTrackShipment
-                    }
+                    paginatedShipments={paginatedShipments}
+                    isLoading={loading}
+                    onTrackShipment={handleTrackShipment}
+                    searchTerm={searchTerm}
+                    onSearchChange={setSearchTerm}
+                    statusFilter={statusFilter}
+                    onStatusFilterChange={setStatusFilter}
+                    currentPage={currentPage}
+                    onPageChange={setCurrentPage}
+                    totalPages={totalPages}
+                    startIndex={startIndex}
+                    endIndex={endIndex}
+                    copiedId={copiedId}
+                    onCopy={handleCopy}
+                    totalShipmentsCount={shipments.length}
                 />
 
                 <TrackingModal
