@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { createShipmentApi } from '../services/newshipment.service';
+import { useToast } from '../context/ToastContext';
 
 
 import type { ShipmentFormData, ShipmentFormErrors } from "../types/shipment.types";
@@ -48,6 +49,7 @@ const extractErrorMessage = (error: unknown): string => {
 
 export const useAddShipmentForm = () => {
   const { user } = useAuth();
+  const { showToast } = useToast();
 
   const [formData, setFormData] = useState<ShipmentFormData>(INITIAL_FORM_DATA);
   const [errors, setErrors] = useState<ShipmentFormErrors>(INITIAL_ERRORS);
@@ -129,14 +131,14 @@ export const useAddShipmentForm = () => {
       };
 
       const response = await createShipmentApi(payload);
-      alert(response.data?.message || 'Shipment created successfully');
+      showToast(response.data?.message || 'Shipment created successfully', 'success');
       resetForm();
     } catch (error: unknown) {
-      alert(extractErrorMessage(error));
+      showToast(extractErrorMessage(error), 'error');
     } finally {
       setIsSubmitting(false);
     }
-  }, [formData, validateForm, resetForm]);
+  }, [formData, validateForm, resetForm, showToast]);
 
   return {
     user,

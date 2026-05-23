@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginApi } from '../services/login.service';
 import { useAuth } from '../context/AuthContext';
+import { useToast } from '../context/ToastContext';
 import type { LoginFields, FieldErrors } from '../types/login.types';
 
 const INITIAL_FIELDS: LoginFields = {
@@ -13,6 +14,7 @@ const INITIAL_FIELDS: LoginFields = {
 export const useLoginForm = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { showToast } = useToast();
 
   const [fields, setFields] = useState<LoginFields>(INITIAL_FIELDS);
   const [errors, setErrors] = useState<FieldErrors>({});
@@ -94,7 +96,7 @@ export const useLoginForm = () => {
         role: data.user.role,
       };
 
-      alert(response.data?.message || 'Login successful');
+      showToast(response.data?.message || 'Login successful', 'success');
 
       login(mappedUser, data.accessToken);
 

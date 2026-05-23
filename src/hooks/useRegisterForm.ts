@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { registerApi } from "../services/register.service";
 import { useAuth } from "../context/AuthContext";
+import { useToast } from "../context/ToastContext";
 
 import type {
   RegisterFields,
@@ -21,6 +22,7 @@ const INITIAL_FIELDS: RegisterFields = {
 export const useRegisterForm = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { showToast } = useToast();
 
   const [fields, setFields] =
     useState<RegisterFields>(INITIAL_FIELDS);
@@ -126,7 +128,7 @@ export const useRegisterForm = () => {
         );
       }
 
-      alert(response.data?.message || "User registered successfully");
+      showToast(response.data?.message || "User registered successfully", "success");
 
       login(data.user, data.accessToken);
 

@@ -68,7 +68,7 @@ export const Dropdown: React.FC<DropdownProps> = ({
           type="button"
           onClick={() => !disabled && setIsOpen(!isOpen)}
           disabled={disabled}
-          className={`flex items-center justify-between w-full py-2.5 px-4 rounded-xl border border-slate-200 bg-white text-slate-800 text-sm font-medium outline-none transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
+          className={`flex items-center justify-between w-full py-2.5 px-4 rounded-xl border border-slate-200 dark:border-[var(--sidebar-border)] bg-white dark:bg-[var(--sidebar-bg)] text-slate-800 dark:text-[var(--color-text-primary)] text-sm font-semibold outline-none transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${
             isOpen ? 'border-primary ring-4 ring-primary/10' : ''
           } ${
             error
@@ -78,12 +78,12 @@ export const Dropdown: React.FC<DropdownProps> = ({
         >
           <span className="flex items-center gap-2.5 truncate">
             {selectedOption?.icon}
-            <span className={selectedOption ? '' : 'text-slate-400 font-normal'}>
+            <span className={selectedOption ? '' : 'text-slate-400 dark:text-[var(--color-text-muted)]/70 font-normal'}>
               {selectedOption ? selectedOption.label : placeholder}
             </span>
           </span>
           <ChevronDown
-            className={`w-4 h-4 text-slate-400 transition-transform duration-250 shrink-0 ${
+            className={`w-4 h-4 text-slate-400 dark:text-[var(--color-text-muted)]/70 transition-transform duration-250 shrink-0 ${
               isOpen ? 'rotate-180 text-primary' : ''
             }`}
           />
@@ -91,9 +91,9 @@ export const Dropdown: React.FC<DropdownProps> = ({
 
         {/* Dropdown Popover */}
         {isOpen && (
-          <div className="absolute left-0 right-0 mt-2 bg-white border border-slate-200 rounded-2xl shadow-[0_10px_30px_rgba(123,87,223,0.15)] overflow-hidden z-50 animate-fade-in py-1.5 max-h-60 overflow-y-auto">
+          <div className="absolute left-0 right-0 mt-2 bg-white dark:bg-[var(--sidebar-bg)] border border-slate-200 dark:border-[var(--sidebar-border)] rounded-2xl shadow-[0_10px_30px_rgba(123,87,223,0.15)] overflow-hidden z-50 animate-fade-in py-1.5 max-h-60 overflow-y-auto">
             {options.length === 0 ? (
-              <div className="py-2.5 px-4 text-sm text-slate-400 text-center">
+              <div className="py-2.5 px-4 text-sm text-slate-400 dark:text-[var(--color-text-muted)] text-center">
                 No options available
               </div>
             ) : (
@@ -104,10 +104,10 @@ export const Dropdown: React.FC<DropdownProps> = ({
                     key={option.value}
                     type="button"
                     onClick={() => handleSelect(option.value)}
-                    className={`flex items-center gap-2.5 w-full py-2.5 px-4 text-sm font-medium text-left border-none outline-none cursor-pointer transition-all duration-150 ${
+                    className={`flex items-center gap-2.5 w-full py-2.5 px-4 text-sm font-bold text-left border-none outline-none cursor-pointer transition-all duration-150 ${
                       isSelected
-                        ? 'bg-[var(--sidebar-active-bg)] text-primary font-semibold'
-                        : 'text-slate-700 hover:bg-slate-50 hover:text-primary'
+                        ? 'bg-[var(--sidebar-active-bg)] dark:bg-[var(--sidebar-active-bg)]/20 text-primary font-bold'
+                        : 'text-slate-700 dark:text-[var(--color-text-primary)] hover:bg-slate-50 dark:hover:bg-[var(--sidebar-active-bg)]/15 hover:text-primary'
                     }`}
                   >
                     {option.icon}

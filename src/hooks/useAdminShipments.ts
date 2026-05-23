@@ -7,8 +7,10 @@ import {
 
 import { getAdminShipmentsApi, updateShipmentStatusApi } from "../services/shipment.service";
 import type { Shipment } from "../types/customershipment.types";
+import { useToast } from "../context/ToastContext";
 
 export const useAdminShipments = () => {
+    const { showToast } = useToast();
     const [shipments, setShipments] = useState<Shipment[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -104,7 +106,7 @@ export const useAdminShipments = () => {
                 const currentIndex = STATUS_PROGRESSION.indexOf(existingShipment.status);
                 const nextIndex = STATUS_PROGRESSION.indexOf(newStatus);
                 if (nextIndex < currentIndex) {
-                    alert("Cannot revert to a previous shipment status.");
+                    showToast("Cannot revert to a previous shipment status.", "warning");
                     return;
                 }
             }
@@ -121,7 +123,7 @@ export const useAdminShipments = () => {
             await updateShipmentStatusApi(id, mappedStatus);
             setShipments(prev => prev.map(s => s.id === id ? { ...s, status: newStatus as any } : s));
         } catch (err: any) {
-            alert(err?.response?.data?.message || "Failed to update status.");
+            showToast(err?.response?.data?.message || "Failed to update status.", "error");
         }
     }, [shipments]);
 

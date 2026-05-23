@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import { LayoutDashboard, Truck, Settings as SettingsIcon, Compass, Users } from 'lucide-react';
+import { useToast } from './context/ToastContext';
 
 const Login = lazy(() => import('./pages/Login'));
 const Register = lazy(() => import('./pages/Register'));
@@ -35,6 +36,7 @@ const PageLoader: React.FC = () => (
 );
 
 const SettingsPage: React.FC = () => {
+    const { showToast } = useToast();
     return (
         <div className="flex flex-col gap-8 w-full animate-fade-in">
             <div className="flex flex-col items-center justify-center text-center bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-3xl p-10 md:p-14 shadow-[var(--sidebar-shadow)] max-w-[600px] m-auto mt-6 box-border transition-colors duration-250">
@@ -48,7 +50,7 @@ const SettingsPage: React.FC = () => {
                 <button
                     type="button"
                     className="inline-flex items-center justify-center px-6 py-3 bg-primary hover:bg-primary-hover text-white border-none rounded-xl text-sm font-semibold cursor-pointer shadow-[0_4px_12px_var(--color-primary-glow)] hover:-translate-y-0.5 hover:shadow-[0_6px_16px_rgba(123,87,223,0.35)] active:translate-y-0 active:shadow-md transition-all duration-200"
-                    onClick={() => alert('Settings Saved!')}
+                    onClick={() => showToast('Settings saved successfully!', 'success')}
                 >
                     Save Changes
                 </button>

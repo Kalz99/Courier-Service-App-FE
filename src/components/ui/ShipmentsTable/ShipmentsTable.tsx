@@ -11,7 +11,6 @@ import {
     ShieldAlert,
     HeartPulse,
     Search,
-    ChevronDown,
     Printer,
     Trash2,
     Eye,
@@ -20,7 +19,7 @@ import {
     Clock,
     CheckCircle2
 } from 'lucide-react';
-import type { Shipment } from '../../types/customershipment.types';
+import type { Shipment } from '../../../types/customershipment.types';
 import { TablePagination } from '../CustomerShipmentsTable/TablePagination';
 import { EmptyState } from '../CustomerShipmentsTable/EmptyState';
 import { TableSkeleton } from '../CustomerShipmentsTable/TableSkeleton';
