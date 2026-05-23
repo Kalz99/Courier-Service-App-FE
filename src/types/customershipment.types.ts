@@ -51,3 +51,13 @@ export interface GetShipmentsResponse {
     message: string;
     data: ShipmentApiResponse[];
 }
+
+export type ShipmentStatusType = "pending" | "in_transit" | "out_for_delivery" | "delivered";
+
+export interface HorizontalTimelineProps {
+    status: ShipmentStatusType;
+}
+
+export interface ShipmentActivityCardProps {
+    shipment: Shipment;
+}

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Inbox, Package, Truck, Rocket } from 'lucide-react';
-import { StatCard } from '../components/ui';
+import { StatCard, RecentShipmentsWidget } from '../components/ui';
 
 const STATS = [
     {
@@ -48,6 +48,9 @@ export const Dashboard: React.FC = () => {
                     />
                 ))}
             </section>
+
+            {/* Recent Shipments Activity Widget */}
+            <RecentShipmentsWidget />
         </div>
     );
 };
