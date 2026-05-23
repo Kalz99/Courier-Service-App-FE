@@ -17,6 +17,10 @@ export const useCustomerShipments = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
 
+    // Date range filters
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+
     // Copying tracking ID state
     const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -54,7 +58,7 @@ export const useCustomerShipments = () => {
     // Reset pagination on filter modifications
     useEffect(() => {
         setCurrentPage(1);
-    }, [searchTerm, statusFilter]);
+    }, [searchTerm, statusFilter, startDate, endDate]);
 
     // Secure fallback clipboard copy
     const handleCopy = useCallback((e: React.MouseEvent, trackingNum: string) => {
@@ -110,9 +114,17 @@ export const useCustomerShipments = () => {
 
             const matchesStatus = statusFilter === "all" || shipment.status === statusFilter;
 
-            return matchesSearch && matchesStatus;
+            let matchesDate = true;
+            if (startDate) {
+                matchesDate = matchesDate && shipment.date >= startDate;
+            }
+            if (endDate) {
+                matchesDate = matchesDate && shipment.date <= endDate;
+            }
+
+            return matchesSearch && matchesStatus && matchesDate;
         });
-    }, [shipments, searchTerm, statusFilter]);
+    }, [shipments, searchTerm, statusFilter, startDate, endDate]);
 
     // Pagination Computations
     const totalPages = useMemo(() => {
@@ -149,6 +161,14 @@ export const useCustomerShipments = () => {
         paginatedShipments,
         startIndex,
         endIndex,
+        startDate,
+        endDate,
+        onStartDateChange: setStartDate,
+        onEndDateChange: setEndDate,
+        onClearDates: () => {
+            setStartDate("");
+            setEndDate("");
+        },
         refreshShipments: () => fetchShipments(searchTerm),
     };
 };

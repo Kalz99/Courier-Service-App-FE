@@ -1,3 +1,13 @@
+export interface CustomerInfo {
+  name: string;
+  company: string;
+  mobile: string;
+  email: string;
+  address: string;
+  totalPackagesReceived: number;
+}
+
+// Existing exports remain unchanged
 export type ShipmentStatus =
     | "Pending"
     | "In Transit"

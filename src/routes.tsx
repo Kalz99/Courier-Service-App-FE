@@ -3,12 +3,14 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import AdminShipments from './pages/AdminShipment';
-import Dashboard from './pages/Dashboard';
+import AdminDashboard from './pages/AdminDashboard';
+import CustomerDashboard from './pages/Dashboard';
 import AddShipment from './pages/AddShipment';
 import CustomerShipments from './pages/CustomerShipments';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import { LayoutDashboard, Truck, Settings as SettingsIcon, Compass } from 'lucide-react';
+import CustomersPage from './pages/CustomersPage';
+import { LayoutDashboard, Truck, Settings as SettingsIcon, Compass, Users } from 'lucide-react';
 
 export interface SidebarRouteConfig {
     path: string;
@@ -33,6 +35,11 @@ export const sidebarRoutes: SidebarRouteConfig[] = [
         path: '/customershipments',
         label: 'My Shipments',
         icon: Compass,
+    },
+    {
+        path: '/customers',
+        label: 'Customers',
+        icon: Users,
     },
     {
         path: '/settings',
@@ -94,8 +101,8 @@ const AppRoutes: React.FC = () => {
             {/* Guarded Routes - Accessible to all Authenticated Users */}
             <Route element={<ProtectedRoute allowedRoles={['admin', 'customer']} />}>
                 <Route element={<Layout name="Dashboard" />}>
-                    <Route index element={<Dashboard />} />
-                    <Route path="dashboard" element={<Dashboard />} />
+                    <Route index element={<CustomerDashboard />} />
+                    <Route path="dashboard" element={<CustomerDashboard />} />
                 </Route>
 
                 <Route element={<Layout name="Settings" />}>
@@ -106,6 +113,12 @@ const AppRoutes: React.FC = () => {
                 <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
                     <Route element={<Layout name="Shipments" />}>
                         <Route path="shipments" element={<AdminShipments />} />
+                    </Route>
+                    <Route element={<Layout name="Admin Dashboard" />}>
+                        <Route path="admin-dashboard" element={<AdminDashboard />} />
+                    </Route>
+                    <Route element={<Layout name="Customers" />}>
+                        <Route path="customers" element={<CustomersPage />} />
                     </Route>
                 </Route>
 

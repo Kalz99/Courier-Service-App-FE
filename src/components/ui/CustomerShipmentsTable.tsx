@@ -1,4 +1,4 @@
-export { CustomerShipmentsTable } from './CustomerShipmentsTable/CustomerShipmentsTable';
-export type { CustomerShipmentsTableProps } from './CustomerShipmentsTable/CustomerShipmentsTable';
+export { ShipmentsTable as CustomerShipmentsTable } from './ShipmentsTable/ShipmentsTable';
+export type { ShipmentsTableProps as CustomerShipmentsTableProps } from './ShipmentsTable/ShipmentsTable';
 export type { RecipientDetails, ShipmentItem } from '../../types/customershipment.types';
-export { ShipmentStatusEnum } from './CustomerShipmentsTable/helpers';
+export { ShipmentStatusEnum } from './ShipmentsTable/helpers';

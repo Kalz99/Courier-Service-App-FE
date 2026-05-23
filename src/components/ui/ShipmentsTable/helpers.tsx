@@ -68,16 +68,16 @@ export const getStatusStyles = (status: string) => {
 export const getPackageIcon = (type: string) => {
     switch (type) {
         case 'document':
-            return <Inbox className="w-4 h-4 text-primary shrink-0" />;
+            return <Inbox className="w-3.5 h-3.5 text-primary shrink-0" />;
         case 'package_box':
-            return <Package className="w-4 h-4 text-primary shrink-0" />;
+            return <Package className="w-3.5 h-3.5 text-primary shrink-0" />;
         case 'pallet':
-            return <Layers className="w-4 h-4 text-primary shrink-0" />;
+            return <Layers className="w-3.5 h-3.5 text-primary shrink-0" />;
         case 'perishable':
-            return <ShieldAlert className="w-4 h-4 text-primary shrink-0" />;
+            return <ShieldAlert className="w-3.5 h-3.5 text-primary shrink-0" />;
         case 'medical':
-            return <HeartPulse className="w-4 h-4 text-primary shrink-0" />;
+            return <HeartPulse className="w-3.5 h-3.5 text-primary shrink-0" />;
         default:
-            return <Package className="w-4 h-4 text-primary shrink-0" />;
+            return <Package className="w-3.5 h-3.5 text-primary shrink-0" />;
     }
 };

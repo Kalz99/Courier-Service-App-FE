@@ -47,9 +47,23 @@ const mapShipment = (
     };
 };
 
-export const getCustomerShipmentsApi = async (tracking?: string): Promise<Shipment[]> => {
+export const getAdminShipmentsApi = async (page: number = 1, limit: number = 10, tracking?: string): Promise<Shipment[]> => {
     const response = await API.get<GetShipmentsResponse>(
         "/shipments/get-shipment",
+        {
+            params: {
+                limit,
+                offset: (page - 1) * limit,
+                tracking: tracking || undefined
+            },
+        }
+    );
+    return response.data.data.map(mapShipment);
+};
+
+export const getCustomerShipmentsApi = async (tracking?: string): Promise<Shipment[]> => {
+    const response = await API.get<GetShipmentsResponse>(
+        "/shipments/get-my-shipment",
         {
             params: tracking ? { tracking } : undefined,
         }
@@ -70,3 +84,8 @@ export const trackShipmentApi = async (tracking: string): Promise<TrackingHistor
     );
     return response.data.data;
 };
+
+export const updateShipmentStatusApi = async (id: string, status: string): Promise<any> => {
+    return API.patch(`/shipments/update-shipment/${id}/status`, { status });
+};
+

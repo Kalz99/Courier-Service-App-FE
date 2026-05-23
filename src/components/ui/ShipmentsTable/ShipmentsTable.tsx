@@ -7,7 +7,7 @@ import { ShipmentRow } from './ShipmentRow';
 import { TrackingModal } from '../TrackingDetailsModal';
 import type { ShipmentItem } from '../../../types/customershipment.types';
 
-export interface CustomerShipmentsTableProps {
+export interface ShipmentsTableProps {
     paginatedShipments: ShipmentItem[];
     isLoading?: boolean;
     onTrackShipment?: (trackingNumber: string) => void;
@@ -24,9 +24,22 @@ export interface CustomerShipmentsTableProps {
     copiedId: string | null;
     onCopy: (e: React.MouseEvent, trackingNum: string) => void;
     totalShipmentsCount: number;
+    
+    // Admin support props
+    role?: 'customer' | 'admin';
+    onUpdateStatus?: (id: string, newStatus: any) => void;
+    onDeleteShipment?: (id: string) => void;
+    onPrintLabel?: (id: string) => void;
+
+    // Date range filter props
+    startDate: string;
+    endDate: string;
+    onStartDateChange: (date: string) => void;
+    onEndDateChange: (date: string) => void;
+    onClearDates?: () => void;
 }
 
-export const CustomerShipmentsTable: React.FC<CustomerShipmentsTableProps> = React.memo(({
+export const ShipmentsTable: React.FC<ShipmentsTableProps> = React.memo(({
     paginatedShipments = [],
     isLoading = false,
     onTrackShipment,
@@ -43,6 +56,15 @@ export const CustomerShipmentsTable: React.FC<CustomerShipmentsTableProps> = Rea
     copiedId,
     onCopy,
     totalShipmentsCount,
+    role = 'customer',
+    onUpdateStatus,
+    onDeleteShipment,
+    onPrintLabel,
+    startDate = '',
+    endDate = '',
+    onStartDateChange,
+    onEndDateChange,
+    onClearDates
 }) => {
     const hasRecords = paginatedShipments.length > 0;
     // Modal state
@@ -54,6 +76,22 @@ export const CustomerShipmentsTable: React.FC<CustomerShipmentsTableProps> = Rea
         setIsModalOpen(true);
     };
 
+    // Dynamically configure column schema based on current role
+    const columns = [
+        { label: 'Tracking Number', width: role === 'admin' ? '15%' : '18%' },
+        ...(role === 'admin' ? [
+            { label: 'Customer Details', width: '18%' }
+        ] : []),
+        { label: 'Recipient Details', width: role === 'admin' ? '22%' : '28%' },
+        ...(role === 'admin' ? [
+            { label: 'Package Type', width: '20%' }
+        ] : [
+            { label: 'Package Details', width: '28%' }
+        ]),
+        { label: 'Status', width: role === 'admin' ? '17%' : '20%' },
+        { label: 'Action', width: role === 'admin' ? '8%' : '6%', align: 'center' }
+    ];
+
     return (
         <div className={`w-full flex flex-col gap-5 ${className}`}>
             <TableToolbar
@@ -61,34 +99,33 @@ export const CustomerShipmentsTable: React.FC<CustomerShipmentsTableProps> = Rea
                 onSearchChange={onSearchChange}
                 statusFilter={statusFilter}
                 onStatusFilterChange={onStatusFilterChange}
+                startDate={startDate}
+                endDate={endDate}
+                onStartDateChange={onStartDateChange}
+                onEndDateChange={onEndDateChange}
+                onClearDates={onClearDates}
             />
 
-            <div className="w-full bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-[24px] shadow-[var(--sidebar-shadow)] overflow-hidden">
-                <div className="overflow-x-auto w-full">
+            <div className="w-full bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-[24px] shadow-[var(--sidebar-shadow)] overflow-visible">
+                <div className="w-full md:overflow-visible overflow-x-auto">
                     {isLoading || hasRecords ? (
                         <table className="w-full min-w-[900px] border-collapse text-left text-sm select-none">
                             <thead>
                                 <tr className="border-b border-[var(--sidebar-border)] bg-[var(--app-bg)]/40">
-                                    <th className="py-4.5 px-6 font-bold text-xs uppercase tracking-wider text-[var(--color-text-muted)] select-none w-[18%]">
-                                        Tracking Number
-                                    </th>
-                                    <th className="py-4.5 px-6 font-bold text-xs uppercase tracking-wider text-[var(--color-text-muted)] select-none w-[30%]">
-                                        Recipient Details
-                                    </th>
-                                    <th className="py-4.5 px-6 font-bold text-xs uppercase tracking-wider text-[var(--color-text-muted)] select-none w-[30%]">
-                                        Package Details
-                                    </th>
-                                    <th className="py-4.5 px-6 font-bold text-xs uppercase tracking-wider text-[var(--color-text-muted)] select-none w-[26%]">
-                                        Status
-                                    </th>
-                                    <th className="py-4.5 px-6 font-bold text-xs uppercase tracking-wider text-[var(--color-text-muted)] select-none w-[6%] text-center">
-                                        Action
-                                    </th>
+                                    {columns.map((col, idx) => (
+                                        <th 
+                                            key={idx}
+                                            className={`py-4.5 px-6 font-bold text-xs uppercase tracking-wider text-[var(--color-text-muted)] select-none ${col.align === 'center' ? 'text-center' : ''}`}
+                                            style={{ width: col.width }}
+                                        >
+                                            {col.label}
+                                        </th>
+                                    ))}
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-[var(--sidebar-border)]/50">
                                 {isLoading ? (
-                                    <TableSkeleton />
+                                    <TableSkeleton role={role} />
                                 ) : (
                                     paginatedShipments.map((shipment) => (
                                         <ShipmentRow
@@ -97,6 +134,10 @@ export const CustomerShipmentsTable: React.FC<CustomerShipmentsTableProps> = Rea
                                             copiedId={copiedId}
                                             onCopy={onCopy}
                                             onTrackShipment={onTrackShipment ?? handleTrackShipment}
+                                            role={role}
+                                            onUpdateStatus={onUpdateStatus}
+                                            onDeleteShipment={onDeleteShipment}
+                                            onPrintLabel={onPrintLabel}
                                         />
                                     ))
                                 )}
@@ -128,4 +169,4 @@ export const CustomerShipmentsTable: React.FC<CustomerShipmentsTableProps> = Rea
     );
 });
 
-CustomerShipmentsTable.displayName = 'CustomerShipmentsTable';
+ShipmentsTable.displayName = 'ShipmentsTable';

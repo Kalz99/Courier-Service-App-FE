@@ -1,10 +1,14 @@
 import React from 'react';
 
-export const TableSkeleton: React.FC = React.memo(() => {
+export interface TableSkeletonProps {
+    role?: 'customer' | 'admin';
+}
+
+export const TableSkeleton: React.FC<TableSkeletonProps> = React.memo(({ role = 'customer' }) => {
     return (
         <>
-            {Array.from({ length: 5 }).map((_, index) => (
-                <tr key={index} className="bg-transparent">
+            {Array.from({ length: 5 }).map((_, rowIndex) => (
+                <tr key={rowIndex} className="bg-transparent">
                     {/* Tracking ID column */}
                     <td className="py-4.5 px-6">
                         <div className="flex items-center gap-2">
@@ -12,6 +16,16 @@ export const TableSkeleton: React.FC = React.memo(() => {
                             <div className="w-8 h-8 rounded-md bg-[var(--sidebar-border)]/40 animate-pulse shrink-0" />
                         </div>
                     </td>
+
+                    {/* Admin-only: Customer Details column */}
+                    {role === 'admin' && (
+                        <td className="py-4.5 px-6">
+                            <div className="flex flex-col gap-2">
+                                <div className="h-4 w-24 bg-[var(--sidebar-border)]/40 rounded animate-pulse" />
+                                <div className="h-3 w-32 bg-[var(--sidebar-border)]/40 rounded animate-pulse" />
+                            </div>
+                        </td>
+                    )}
 
                     {/* Recipient Details column */}
                     <td className="py-4.5 px-6">
@@ -22,7 +36,7 @@ export const TableSkeleton: React.FC = React.memo(() => {
                         </div>
                     </td>
 
-                    {/* Package Details column */}
+                    {/* Package Details/Type column */}
                     <td className="py-4.5 px-6 text-left">
                         <div className="flex items-center gap-3">
                             <div className="w-9 h-9 rounded-lg bg-[var(--sidebar-border)]/40 animate-pulse shrink-0" />

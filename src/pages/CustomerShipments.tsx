@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 
 import {
-    CustomerShipmentsTable,
+    ShipmentsTable,
     TrackingModal,
 } from "../components/ui";
 
@@ -33,6 +33,11 @@ export const CustomerShipments: React.FC =
             endIndex,
             refreshShipments,
             shipments,
+            startDate,
+            endDate,
+            onStartDateChange,
+            onEndDateChange,
+            onClearDates
         } = useCustomerShipments();
 
         const [
@@ -98,7 +103,7 @@ export const CustomerShipments: React.FC =
                     </div>
                 )}
 
-                <CustomerShipmentsTable
+                <ShipmentsTable
                     paginatedShipments={paginatedShipments}
                     isLoading={loading}
                     onTrackShipment={handleTrackShipment}
@@ -114,6 +119,11 @@ export const CustomerShipments: React.FC =
                     copiedId={copiedId}
                     onCopy={handleCopy}
                     totalShipmentsCount={shipments.length}
+                    startDate={startDate}
+                    endDate={endDate}
+                    onStartDateChange={onStartDateChange}
+                    onEndDateChange={onEndDateChange}
+                    onClearDates={onClearDates}
                 />
 
                 <TrackingModal
