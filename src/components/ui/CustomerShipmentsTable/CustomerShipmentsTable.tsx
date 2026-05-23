@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TableToolbar } from './TableToolbar';
 import { TableSkeleton } from './TableSkeleton';
 import { EmptyState } from './EmptyState';
 import { TablePagination } from './TablePagination';
 import { ShipmentRow } from './ShipmentRow';
+import { TrackingModal } from '../TrackingDetailsModal';
 import type { ShipmentItem } from '../../../types/customershipment.types';
 
 export interface CustomerShipmentsTableProps {
@@ -44,6 +45,14 @@ export const CustomerShipmentsTable: React.FC<CustomerShipmentsTableProps> = Rea
     totalShipmentsCount,
 }) => {
     const hasRecords = paginatedShipments.length > 0;
+    // Modal state
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedTrackingNumber, setSelectedTrackingNumber] = useState<string | null>(null);
+
+    const handleTrackShipment = (trackingNumber: string) => {
+        setSelectedTrackingNumber(trackingNumber);
+        setIsModalOpen(true);
+    };
 
     return (
         <div className={`w-full flex flex-col gap-5 ${className}`}>
@@ -87,7 +96,7 @@ export const CustomerShipmentsTable: React.FC<CustomerShipmentsTableProps> = Rea
                                             shipment={shipment}
                                             copiedId={copiedId}
                                             onCopy={onCopy}
-                                            onTrackShipment={onTrackShipment}
+                                            onTrackShipment={onTrackShipment ?? handleTrackShipment}
                                         />
                                     ))
                                 )}
@@ -109,6 +118,12 @@ export const CustomerShipmentsTable: React.FC<CustomerShipmentsTableProps> = Rea
                     />
                 )}
             </div>
+            {/** Tracking Modal **/}
+            <TrackingModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                trackingNumber={selectedTrackingNumber}
+            />
         </div>
     );
 });

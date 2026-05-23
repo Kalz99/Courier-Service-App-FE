@@ -6,6 +6,7 @@ import type {
     GetShipmentsResponse,
 } from "../types/customershipment.types";
 import type { CreateShipmentPayload } from "../types/shipment.types";
+import type { TrackingHistoryItem, TrackShipmentResponse } from "../types/tracking.types";
 
 
 const SHIPMENT_TYPE_LABELS: Record<string, string> = {
@@ -58,4 +59,14 @@ export const getCustomerShipmentsApi = async (tracking?: string): Promise<Shipme
 
 export const createShipmentApi = async (payload: CreateShipmentPayload) => {
     return API.post("/shipments/create-shipment", payload);
-};
+};
+
+export const trackShipmentApi = async (tracking: string): Promise<TrackingHistoryItem[]> => {
+    const response = await API.get<TrackShipmentResponse>(
+        "/shipments/track-shipment",
+        {
+            params: { tracking },
+        }
+    );
+    return response.data.data;
+};
