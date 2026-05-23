@@ -6,12 +6,14 @@ interface TrackingModalProps {
     isOpen: boolean;
     onClose: () => void;
     trackingNumber: string | null;
+    forceLight?: boolean;
 }
 
 export const TrackingModal: React.FC<TrackingModalProps> = ({
     isOpen,
     onClose,
     trackingNumber,
+    forceLight = false,
 }) => {
 
     const {
@@ -93,17 +95,25 @@ export const TrackingModal: React.FC<TrackingModalProps> = ({
             />
 
             {/* Modal */}
-            <div className="relative w-full max-w-[360px] bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-[24px] shadow-2xl p-7 overflow-hidden">
+            <div className={`relative w-full max-w-[360px] rounded-[24px] shadow-2xl p-7 overflow-hidden transition-colors ${
+                forceLight 
+                    ? 'bg-white border border-slate-200 text-slate-800' 
+                    : 'bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] text-[var(--color-text-primary)]'
+            }`}>
 
                 {/* Header */}
                 <div className="flex items-center justify-between mb-8">
 
                     <div>
-                        <span className="text-[10px] font-bold text-[var(--color-text-muted)] uppercase tracking-widest">
+                        <span className={`text-[10px] font-bold uppercase tracking-widest ${
+                            forceLight ? 'text-slate-400' : 'text-[var(--color-text-muted)]'
+                        }`}>
                             Tracking Status
                         </span>
 
-                        <h3 className="text-base font-mono font-bold text-[var(--color-text-primary)] mt-1">
+                        <h3 className={`text-base font-mono font-bold mt-1 ${
+                            forceLight ? 'text-slate-800' : 'text-[var(--color-text-primary)]'
+                        }`}>
                             {trackingNumber}
                         </h3>
                     </div>
@@ -111,7 +121,11 @@ export const TrackingModal: React.FC<TrackingModalProps> = ({
                     <button
                         aria-label="Close tracking modal"
                         onClick={onClose}
-                        className="p-1.5 rounded-xl bg-[var(--app-bg)] border border-[var(--sidebar-border)] text-[var(--color-text-muted)] hover:text-primary cursor-pointer transition-colors"
+                        className={`p-1.5 rounded-xl cursor-pointer transition-colors border ${
+                            forceLight 
+                                ? 'bg-slate-50 border-slate-200 text-slate-400 hover:text-primary' 
+                                : 'bg-[var(--app-bg)] border-[var(--sidebar-border)] text-[var(--color-text-muted)] hover:text-primary'
+                        }`}
                     >
                         <X className="w-4 h-4" />
                     </button>
@@ -121,7 +135,9 @@ export const TrackingModal: React.FC<TrackingModalProps> = ({
                 {/* Loading State */}
                 {isLoading ? (
 
-                    <div className="flex flex-col items-center justify-center py-12 gap-3 text-[var(--color-text-muted)]">
+                    <div className={`flex flex-col items-center justify-center py-12 gap-3 ${
+                        forceLight ? 'text-slate-400' : 'text-[var(--color-text-muted)]'
+                    }`}>
 
                         <Loader2 className="w-8 h-8 animate-spin text-primary" />
 
@@ -142,11 +158,15 @@ export const TrackingModal: React.FC<TrackingModalProps> = ({
 
                         <div className="flex flex-col gap-1">
 
-                            <span className="text-xs font-bold text-[var(--color-text-primary)]">
+                            <span className={`text-xs font-bold ${
+                                forceLight ? 'text-slate-800' : 'text-[var(--color-text-primary)]'
+                            }`}>
                                 Tracking Failed
                             </span>
 
-                            <span className="text-[11px] text-[var(--color-text-muted)] max-w-[240px] leading-relaxed">
+                            <span className={`text-[11px] max-w-[240px] leading-relaxed ${
+                                forceLight ? 'text-slate-400' : 'text-[var(--color-text-muted)]'
+                            }`}>
                                 {error}
                             </span>
 
@@ -172,19 +192,23 @@ export const TrackingModal: React.FC<TrackingModalProps> = ({
                                     {/* Progress Line */}
                                     {!isLastStep && (
                                         <div
-                                            className={`absolute left-3 top-7 w-0.5 h-[calc(100%-16px)] -translate-x-1/2 ${step.done && steps[index + 1].done
-                                                ? 'bg-primary'
-                                                : 'bg-[var(--sidebar-border)]'
-                                                }`}
+                                            className={`absolute left-3 top-7 w-0.5 h-[calc(100%-16px)] -translate-x-1/2 ${
+                                                step.done && steps[index + 1].done
+                                                    ? 'bg-primary'
+                                                    : forceLight ? 'bg-slate-100' : 'bg-[var(--sidebar-border)]'
+                                            }`}
                                         />
                                     )}
 
                                     {/* Status Node */}
                                     <div
-                                        className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 z-10 border text-[10px] transition-all mt-0.5 ${step.done
-                                            ? 'bg-primary border-primary text-white shadow-[0_0_8px_var(--color-primary-glow)]'
-                                            : 'bg-[var(--app-bg)] border-[var(--sidebar-border)] text-[var(--color-text-muted)]/40'
-                                            }`}
+                                        className={`w-6 h-6 rounded-full flex items-center justify-center shrink-0 z-10 border text-[10px] transition-all mt-0.5 ${
+                                            step.done
+                                                ? 'bg-primary border-primary text-white shadow-[0_0_8px_var(--color-primary-glow)]'
+                                                : forceLight 
+                                                    ? 'bg-slate-50 border-slate-200 text-slate-300' 
+                                                    : 'bg-[var(--app-bg)] border-[var(--sidebar-border)] text-[var(--color-text-muted)]/40'
+                                        }`}
                                     >
                                         {step.done ? (
                                             <Check className="w-3 h-3 stroke-[3]" />
@@ -197,19 +221,21 @@ export const TrackingModal: React.FC<TrackingModalProps> = ({
                                     <div className="flex flex-col min-w-0 pt-0.5">
 
                                         <span
-                                            className={`text-sm font-bold transition-colors ${step.done
-                                                ? 'text-[var(--color-text-primary)]'
-                                                : 'text-[var(--color-text-muted)]/40'
-                                                }`}
+                                            className={`text-sm font-bold transition-colors ${
+                                                step.done
+                                                    ? forceLight ? 'text-slate-800' : 'text-[var(--color-text-primary)]'
+                                                    : forceLight ? 'text-slate-300' : 'text-[var(--color-text-muted)]/40'
+                                            }`}
                                         >
                                             {step.label}
                                         </span>
 
                                         <span
-                                            className={`text-[11px] font-mono mt-1 ${step.done
-                                                ? 'text-[var(--color-text-muted)]'
-                                                : 'text-[var(--color-text-muted)]/30'
-                                                }`}
+                                            className={`text-[11px] font-mono mt-1 ${
+                                                step.done
+                                                    ? forceLight ? 'text-slate-500' : 'text-[var(--color-text-muted)]'
+                                                    : forceLight ? 'text-slate-300' : 'text-[var(--color-text-muted)]/30'
+                                            }`}
                                         >
                                             {step.time}
                                         </span>

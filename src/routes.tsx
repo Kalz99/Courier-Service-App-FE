@@ -3,12 +3,22 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/layout/ProtectedRoute';
 import AdminShipments from './pages/AdminShipment';
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 import Dashboard from './pages/Dashboard';
 import AddShipment from './pages/AddShipment';
 import CustomerShipments from './pages/CustomerShipments';
 import Login from './pages/Login';
 import Register from './pages/Register';
+<<<<<<< Updated upstream
 import { LayoutDashboard, Truck, Settings as SettingsIcon, Compass } from 'lucide-react';
+=======
+import TrackingPage from './pages/TrackingPage';
+import CustomersPage from './pages/CustomersPage';
+import { LayoutDashboard, Truck, Settings as SettingsIcon, Compass, Users } from 'lucide-react';
+>>>>>>> Stashed changes
 
 export interface SidebarRouteConfig {
     path: string;
@@ -90,14 +100,17 @@ const AppRoutes: React.FC = () => {
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/tracking" element={<TrackingPage />} />
 
             {/* Guarded Routes - Accessible to all Authenticated Users */}
             <Route element={<ProtectedRoute allowedRoles={['admin', 'customer']} />}>
                 <Route element={<Layout name="Dashboard" />}>
+<<<<<<< Updated upstream
                     <Route index element={<Dashboard />} />
+=======
+>>>>>>> Stashed changes
                     <Route path="dashboard" element={<Dashboard />} />
                 </Route>
-
                 <Route element={<Layout name="Settings" />}>
                     <Route path="settings" element={<SettingsPage />} />
                 </Route>
@@ -107,6 +120,12 @@ const AppRoutes: React.FC = () => {
                     <Route element={<Layout name="Shipments" />}>
                         <Route path="shipments" element={<AdminShipments />} />
                     </Route>
+<<<<<<< Updated upstream
+=======
+                    <Route element={<Layout name="Customers" />}>
+                        <Route path="customers" element={<CustomersPage />} />
+                    </Route>
+>>>>>>> Stashed changes
                 </Route>
 
                 {/* Customer-only Guarded Routes */}

@@ -3,6 +3,7 @@ import { Mail, Lock, Shield, User, ArrowRight, AlertTriangle } from 'lucide-reac
 import { InputField, Dropdown } from '../components/ui';
 import { useLoginForm } from '../hooks/useLoginForm';
 import logoImg from '../assets/logo.png';
+import logimImg from '../assets/image.webp';
 
 export const Login: React.FC = () => {
   const {
@@ -29,102 +30,125 @@ export const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4">
-      <div className="w-full max-w-[420px] bg-white rounded-3xl border border-slate-200 shadow-sm p-8 md:p-10">
-        
-        {/* Branding Logo & Header */}
-        <div className="flex flex-col items-center text-center mb-8 gap-3">
-          <div className="flex items-center gap-3.5">
-            <img 
-              src={logoImg} 
-              alt="ShipSync Logo" 
-              className="w-12 h-12 object-contain" 
+      <div className="w-full max-w-[860px] bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden flex flex-col md:flex-row">
+
+        {/* Left Column: Premium Logistics Graphic Space */}
+        <div className="hidden md:flex md:w-1/2 bg-slate-50/50 p-8 flex-col items-center justify-center border-r border-slate-100/80 shrink-0">
+          <div className="w-full h-full min-h-[480px] rounded-2xl overflow-hidden shadow-inner relative group bg-slate-100">
+            <img
+              src={logimImg}
+              alt="Logistics Portal"
+              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
-            <h1 className="text-3xl font-bold text-slate-900">
-              ShipSync
-            </h1>
+
+
           </div>
-          <p className="text-sm text-slate-500 max-w-[280px] mt-1.5 leading-relaxed">
-            Access your shipping details, live analytics, and logistic pipelines instantly.
-          </p>
         </div>
 
-        {/* Login Form */}
-        <form onSubmit={handleSubmit} className="space-y-6">
-          
-          {/* Global Error Banner */}
-          {errors.global && (
-            <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
-              <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
-              <p>{errors.global}</p>
+        {/* Right Column: Login Form Content */}
+        <div className="w-full md:w-1/2 p-8 md:p-10 flex flex-col justify-center">
+
+          {/* Branding Logo & Header */}
+          <div className="flex flex-col items-center text-center mb-8 gap-3">
+            <div className="flex items-center gap-3.5">
+              <img
+                src={logoImg}
+                alt="ShipSync Logo"
+                className="w-12 h-12 object-contain"
+              />
+              <h1 className="text-3xl font-bold text-slate-900">
+                ShipSync
+              </h1>
             </div>
-          )}
+            <p className="text-sm text-slate-500 max-w-[280px] mt-1.5 leading-relaxed">
+              Access your shipping details, live analytics, and logistic pipelines instantly.
+            </p>
+          </div>
 
-          {/* Email Input Field */}
-          <InputField
-            label="Email Address"
-            type="email"
-            placeholder="name@example.com"
-            value={fields.email}
-            onChange={(e) => handleFieldChange('email', e.target.value)}
-            error={errors.email}
-            icon={<Mail className="w-4 h-4" />}
-            required
-            autoComplete="email"
-          />
+          {/* Login Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
 
-          {/* Password Input Field */}
-          <InputField
-            label="Password"
-            type="password"
-            placeholder="••••••••"
-            value={fields.password}
-            onChange={(e) => handleFieldChange('password', e.target.value)}
-            error={errors.password}
-            icon={<Lock className="w-4 h-4" />}
-            required
-            autoComplete="current-password"
-          />
-
-          {/* User Role Selection Dropdown */}
-          <Dropdown
-            label="Choose Workspace Portal"
-            options={roleOptions}
-            selectedValue={fields.role}
-            onChange={(val) => handleFieldChange('role', val)}
-            placeholder="Select a portal"
-          />
-
-          {/* Submit Action Button */}
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full h-12 rounded-xl bg-primary text-white font-medium flex items-center justify-center gap-2 transition hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {isSubmitting ? (
-              <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-            ) : (
-              <>
-                <span>Sign In</span>
-                <ArrowRight className="w-4 h-4" />
-              </>
+            {/* Global Error Banner */}
+            {errors.global && (
+              <div className="flex items-start gap-3 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-600">
+                <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5" />
+                <p>{errors.global}</p>
+              </div>
             )}
-          </button>
-        </form>
 
-        {/* Link to Register */}
-        <div className="mt-8 text-center flex flex-col gap-2.5">
-          <p className="text-sm text-slate-500">
-            Don't have an account?{' '}
-            <Link 
-              to="/register" 
-              className="text-primary font-medium hover:underline"
+            {/* Email Input Field */}
+            <InputField
+              label="Email Address"
+              type="email"
+              placeholder="name@example.com"
+              value={fields.email}
+              onChange={(e) => handleFieldChange('email', e.target.value)}
+              error={errors.email}
+              icon={<Mail className="w-4 h-4" />}
+              required
+              autoComplete="email"
+            />
+
+            {/* Password Input Field */}
+            <InputField
+              label="Password"
+              type="password"
+              placeholder="••••••••"
+              value={fields.password}
+              onChange={(e) => handleFieldChange('password', e.target.value)}
+              error={errors.password}
+              icon={<Lock className="w-4 h-4" />}
+              required
+              autoComplete="current-password"
+            />
+
+            {/* User Role Selection Dropdown */}
+            <Dropdown
+              label="Choose Workspace Portal"
+              options={roleOptions}
+              selectedValue={fields.role}
+              onChange={(val) => handleFieldChange('role', val)}
+              placeholder="Select a portal"
+            />
+
+            {/* Submit Action Button */}
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="w-full h-12 rounded-xl bg-primary text-white font-medium flex items-center justify-center gap-2 transition hover:opacity-90 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              Create Account
-            </Link>
-          </p>
-          <p className="text-xs text-slate-400">
-            Secured end-to-end logistics workspace portal.
-          </p>
+              {isSubmitting ? (
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <>
+                  <span>Sign In</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </form>
+
+          {/* Link to Register */}
+          <div className="mt-8 text-center flex flex-col gap-2.5">
+            <p className="text-sm text-slate-500">
+              Don't have an account?{' '}
+              <Link
+                to="/register"
+                className="text-primary font-medium hover:underline"
+              >
+                Create Account
+              </Link>
+            </p>
+            <p className="text-xs text-slate-500">
+              Looking for your delivery?{' '}
+              <Link
+                to="/tracking"
+                className="text-primary font-medium hover:underline"
+              >
+                Track instantly here
+              </Link>
+            </p>
+          </div>
         </div>
       </div>
     </div>

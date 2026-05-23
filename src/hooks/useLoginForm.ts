@@ -99,7 +99,7 @@ export const useLoginForm = () => {
       login(mappedUser, data.accessToken);
 
       if (mappedUser.role === 'admin') {
-        navigate('/dashboard-admin');
+        navigate('/dashboard');
       } else {
         navigate('/dashboard');
       }
