@@ -59,6 +59,17 @@ export const ShipmentRow: React.FC<ShipmentRowProps> = React.memo(({
         }
     ];
 
+    // Enforce forward-only linear status progression: pending -> in_transit -> out_for_delivery -> delivered
+    const STATUS_PROGRESSION = ['pending', 'in_transit', 'out_for_delivery', 'delivered'];
+    const currentStatusIndex = Math.max(0, STATUS_PROGRESSION.indexOf(shipment.status));
+    
+    const filteredOptions = dropdownOptions.filter((opt) => {
+        const optIndex = STATUS_PROGRESSION.indexOf(opt.value);
+        return optIndex >= currentStatusIndex;
+    });
+
+    const isDelivered = shipment.status === 'delivered';
+
     return (
         <tr className="hover:bg-[var(--sidebar-active-bg)]/25 transition-colors duration-150 group">
             {/* Tracking ID column */}
@@ -146,11 +157,12 @@ export const ShipmentRow: React.FC<ShipmentRowProps> = React.memo(({
             <td className="py-4.5 px-6 relative overflow-visible z-10 hover:z-30 focus-within:z-30 min-w-[180px]">
                 {role === 'admin' ? (
                     <Dropdown
-                        options={dropdownOptions}
+                        options={filteredOptions}
                         selectedValue={shipment.status}
                         onChange={(val) => onUpdateStatus?.(shipment.id, val as any)}
                         placeholder="Select Status"
                         className="w-full max-w-[170px]"
+                        disabled={isDelivered}
                     />
                 ) : (
                     <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider select-none ${styleInfo.bg} ${styleInfo.text}`}>
