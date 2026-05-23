@@ -156,7 +156,7 @@ export const AddShipment: React.FC = () => {
                                 { value: 'g', label: 'Grams (g)' },
                             ]}
                             selectedValue={formData.weightUnit}
-                            onChange={handleWeightUnitChange}
+                            onChange={(val) => handleWeightUnitChange(val as 'kg' | 'g')}
                             placeholder="Select unit"
                         />
                     </div>

@@ -1,13 +1,6 @@
 import API from './apiClient';
+import type { RegisterPayload } from '../types/register.types';
 
-export interface RegisterPayload {
-  name: string;
-  email: string;
-  password: string;
-  address: string;
-  businessName: string;
-  phone: string;
-}
 
 export const registerApi = async (payload: RegisterPayload) => {
   return await API.post('/auth/register', payload);

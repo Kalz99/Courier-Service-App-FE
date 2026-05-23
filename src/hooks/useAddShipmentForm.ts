@@ -1,29 +1,10 @@
 import React, { useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { createShipmentApi } from '../services/shipment.service';
+import { createShipmentApi } from '../services/newshipment.service';
 
-/**
- * Interface representing the shipment form values.
- */
-export interface ShipmentFormData {
-  recipientName: string;
-  recipientPhoneNumber: string;
-  recipientAddress: string;
-  shipmentType: string;
-  weight: string;
-  weightUnit: 'kg' | 'g';
-}
 
-/**
- * Interface representing validation error messages for the shipment form.
- */
-export interface ShipmentFormErrors {
-  recipientName: string;
-  recipientPhoneNumber: string;
-  recipientAddress: string;
-  shipmentType: string;
-  weight: string;
-}
+import type { ShipmentFormData, ShipmentFormErrors } from "../types/shipment.types";
+
 
 const INITIAL_FORM_DATA: ShipmentFormData = {
   recipientName: '',
@@ -42,18 +23,14 @@ const INITIAL_ERRORS: ShipmentFormErrors = {
   weight: '',
 };
 
-/**
- * Utility function to convert weight to kilograms.
- */
+
 const convertToKg = (weight: string, unit: 'kg' | 'g'): number => {
   const numWeight = Number(weight);
   if (isNaN(numWeight)) return 0;
   return unit === 'g' ? numWeight / 1000 : numWeight;
 };
 
-/**
- * Utility function to extract a user-friendly error message from API errors.
- */
+
 const extractErrorMessage = (error: unknown): string => {
   const defaultMessage = 'Failed to create shipment';
   if (typeof error === 'object' && error !== null) {
@@ -68,10 +45,7 @@ const extractErrorMessage = (error: unknown): string => {
   return defaultMessage;
 };
 
-/**
- * A custom hook to manage shipment form state, validation, performance optimizations,
- * and API integration.
- */
+
 export const useAddShipmentForm = () => {
   const { user } = useAuth();
 
@@ -79,9 +53,7 @@ export const useAddShipmentForm = () => {
   const [errors, setErrors] = useState<ShipmentFormErrors>(INITIAL_ERRORS);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  /**
-   * Handle changes to input fields with automatic error clearing and reference stability.
-   */
+
   const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -94,9 +66,7 @@ export const useAddShipmentForm = () => {
     });
   }, []);
 
-  /**
-   * Handle change to the shipment type selection.
-   */
+
   const handleShipmentTypeChange = useCallback((value: string) => {
     setFormData((prev) => ({ ...prev, shipmentType: value }));
 
@@ -108,16 +78,12 @@ export const useAddShipmentForm = () => {
     });
   }, []);
 
-  /**
-   * Handle change to the weight unit selection.
-   */
+
   const handleWeightUnitChange = useCallback((value: 'kg' | 'g') => {
     setFormData((prev) => ({ ...prev, weightUnit: value }));
   }, []);
 
-  /**
-   * Validates the active form state.
-   */
+
   const validateForm = useCallback((): boolean => {
     const newErrors: ShipmentFormErrors = {
       recipientName: formData.recipientName.trim() ? '' : 'Recipient name is required',
@@ -138,17 +104,13 @@ export const useAddShipmentForm = () => {
     return !Object.values(newErrors).some(Boolean);
   }, [formData]);
 
-  /**
-   * Resets the form state and errors.
-   */
+
   const resetForm = useCallback(() => {
     setFormData(INITIAL_FORM_DATA);
     setErrors(INITIAL_ERRORS);
   }, []);
 
-  /**
-   * Handles form submission to create a shipment.
-   */
+
   const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!validateForm()) return;

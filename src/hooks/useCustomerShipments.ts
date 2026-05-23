@@ -1,142 +1,156 @@
-import { useState, useEffect } from 'react';
-import type { CustomerShipmentItem as ShipmentItem } from '../components/ui';
+import {
+    useCallback,
+    useEffect,
+    useState,
+    useMemo,
+} from "react";
 
-const MOCK_SHIPMENTS_DATA: ShipmentItem[] = [
-  {
-    id: '1',
-    trackingNumber: 'TRK-98234-X',
-    recipient: {
-      name: 'John Doe',
-      mobile: '+1 (555) 234-5678',
-      address: '123 Pine Street, Apt 4B, Seattle, WA 98101'
-    },
-    packageType: 'document',
-    packageName: 'Important Legal Docs',
-    status: 'delivered',
-    date: '2026-05-22',
-    weight: '0.4 kg'
-  },
-  {
-    id: '2',
-    trackingNumber: 'TRK-48102-Y',
-    recipient: {
-      name: 'Sarah Connor',
-      mobile: '+1 (555) 876-5432',
-      address: '742 Evergreen Terrace, Springfield, OR 97477'
-    },
-    packageType: 'package_box',
-    packageName: 'Standard Package / Box',
-    status: 'in_transit',
-    date: '2026-05-21',
-    weight: '4.2 kg'
-  },
-  {
-    id: '3',
-    trackingNumber: 'TRK-30291-A',
-    recipient: {
-      name: 'Bruce Wayne',
-      mobile: '+1 (555) 999-1111',
-      address: '1007 Mountain Drive, Gotham City, NJ 07001'
-    },
-    packageType: 'pallet',
-    packageName: 'Industrial Bulk Crates',
-    status: 'pending',
-    date: '2026-05-22',
-    weight: '120.0 kg'
-  },
-  {
-    id: '4',
-    trackingNumber: 'TRK-88231-Z',
-    recipient: {
-      name: 'Peter Parker',
-      mobile: '+1 (555) 444-2222',
-      address: '20 Ingram Street, Queens, NY 11375'
-    },
-    packageType: 'medical',
-    packageName: 'Pharmaceutical / Vaccine Pack',
-    status: 'out_for_delivery',
-    date: '2026-05-22',
-    weight: '1.8 kg'
-  },
-  {
-    id: '5',
-    trackingNumber: 'TRK-10928-B',
-    recipient: {
-      name: 'Tony Stark',
-      mobile: '+1 (555) 300-3000',
-      address: '10880 Malibu Point, Malibu, CA 90265'
-    },
-    packageType: 'perishable',
-    packageName: 'Perishable Gourmet Food',
-    status: 'delivered',
-    date: '2026-05-20',
-    weight: '3.5 kg'
-  },
-  {
-    id: '6',
-    trackingNumber: 'TRK-77123-K',
-    recipient: {
-      name: 'Clark Kent',
-      mobile: '+1 (555) 777-8888',
-      address: '344 Clinton Street, Apt 3B, Metropolis, NY 10001'
-    },
-    packageType: 'document',
-    packageName: 'Press Release Envelopes',
-    status: 'in_transit',
-    date: '2026-05-22',
-    weight: '0.2 kg'
-  },
-  {
-    id: '7',
-    trackingNumber: 'TRK-55248-L',
-    recipient: {
-      name: 'Diana Prince',
-      mobile: '+1 (555) 123-0987',
-      address: 'Gateway City Museum, Washington, DC 20004'
-    },
-    packageType: 'package_box',
-    packageName: 'Fragile Antique Vase',
-    status: 'pending',
-    date: '2026-05-21',
-    weight: '8.7 kg'
-  }
-];
+import { getCustomerShipmentsApi } from "../services/shipment.service";
+import type { Shipment } from "../types/customershipment.types";
 
 export const useCustomerShipments = () => {
-  const [shipments, setShipments] = useState<ShipmentItem[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+    const [shipments, setShipments] = useState<Shipment[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    setLoading(true);
-    const timer = setTimeout(() => {
-      try {
-        setShipments(MOCK_SHIPMENTS_DATA);
+    // Search and Status Filters
+    const [searchTerm, setSearchTerm] = useState("");
+    const [statusFilter, setStatusFilter] = useState("all");
+
+    // Copying tracking ID state
+    const [copiedId, setCopiedId] = useState<string | null>(null);
+
+    // Pagination
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 5;
+
+    const fetchShipments = useCallback(async (search?: string) => {
+        setLoading(true);
         setError(null);
-      } catch (err) {
-        setError('Failed to fetch shipments data. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    }, 1000);
 
-    return () => clearTimeout(timer);
-  }, []);
+        try {
+            const data = await getCustomerShipmentsApi(search);
+            setShipments(data);
+        } catch (error: unknown) {
+            let message = "Failed to load shipments";
+            if (error instanceof Error) {
+                message = error.message;
+            }
+            setError(message);
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
-  const refreshShipments = () => {
-    setLoading(true);
-    setTimeout(() => {
-      setShipments(MOCK_SHIPMENTS_DATA);
-      setLoading(false);
-    }, 500);
-  };
+    // Debounced fetch on search
+    useEffect(() => {
+        const delayDebounceFn = setTimeout(() => {
+            fetchShipments(searchTerm);
+        }, 400);
 
-  return {
-    shipments,
-    loading,
-    error,
-    refreshShipments,
-  };
+        return () => clearTimeout(delayDebounceFn);
+    }, [fetchShipments, searchTerm]);
+
+    // Reset pagination on filter modifications
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, statusFilter]);
+
+    // Secure fallback clipboard copy
+    const handleCopy = useCallback((e: React.MouseEvent, trackingNum: string) => {
+        e.stopPropagation();
+        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+            navigator.clipboard.writeText(trackingNum)
+                .then(() => {
+                    setCopiedId(trackingNum);
+                    setTimeout(() => setCopiedId(null), 1500);
+                })
+                .catch(() => fallbackCopy(trackingNum));
+        } else {
+            fallbackCopy(trackingNum);
+        }
+    }, []);
+
+    const fallbackCopy = (trackingNum: string) => {
+        try {
+            const textArea = document.createElement("textarea");
+            textArea.value = trackingNum;
+            textArea.style.position = "fixed";
+            textArea.style.top = "0";
+            textArea.style.left = "0";
+            textArea.style.width = "2em";
+            textArea.style.height = "2em";
+            textArea.style.padding = "0";
+            textArea.style.border = "none";
+            textArea.style.outline = "none";
+            textArea.style.boxShadow = "none";
+            textArea.style.background = "transparent";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            const success = document.execCommand("copy");
+            document.body.removeChild(textArea);
+            if (success) {
+                setCopiedId(trackingNum);
+                setTimeout(() => setCopiedId(null), 1500);
+            }
+        } catch (err) {
+            console.error("Secure copy fallback failed", err);
+        }
+    };
+
+    // Filter Logic
+    const filteredShipments = useMemo(() => {
+        return shipments.filter((shipment) => {
+            const matchesSearch =
+                shipment.trackingNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                shipment.recipient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                shipment.recipient.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                shipment.packageName.toLowerCase().includes(searchTerm.toLowerCase());
+
+            const matchesStatus = statusFilter === "all" || shipment.status === statusFilter;
+
+            return matchesSearch && matchesStatus;
+        });
+    }, [shipments, searchTerm, statusFilter]);
+
+    // Pagination Computations
+    const totalPages = useMemo(() => {
+        return Math.max(1, Math.ceil(filteredShipments.length / itemsPerPage));
+    }, [filteredShipments]);
+
+    const paginatedShipments = useMemo(() => {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        return filteredShipments.slice(startIndex, startIndex + itemsPerPage);
+    }, [filteredShipments, currentPage]);
+
+    const startIndex = useMemo(() => {
+        if (filteredShipments.length === 0) return 0;
+        return (currentPage - 1) * itemsPerPage + 1;
+    }, [filteredShipments, currentPage]);
+
+    const endIndex = useMemo(() => {
+        return Math.min(currentPage * itemsPerPage, filteredShipments.length);
+    }, [filteredShipments, currentPage]);
+
+    return {
+        shipments,
+        loading,
+        error,
+        searchTerm,
+        setSearchTerm,
+        statusFilter,
+        setStatusFilter,
+        copiedId,
+        handleCopy,
+        currentPage,
+        setCurrentPage,
+        totalPages,
+        paginatedShipments,
+        startIndex,
+        endIndex,
+        refreshShipments: () => fetchShipments(searchTerm),
+    };
 };
 
 export default useCustomerShipments;

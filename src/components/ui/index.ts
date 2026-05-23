@@ -6,5 +6,6 @@ export * from './RadioButton';
 export { CustomerShipmentsTable } from './CustomerShipmentsTable';
 export { AdminShipmentsTable } from './AdminShipmentsTable';
 export { TrackingModal, TrackingModal as TrackingDetailsModal } from './TrackingDetailsModal';
+export { RecentShipmentsWidget } from './RecentShipmentsWidget';
 export type { ShipmentItem as CustomerShipmentItem } from './CustomerShipmentsTable';
 export type { ShipmentItem as AdminShipmentItem, ShipmentItem } from './AdminShipmentsTable';

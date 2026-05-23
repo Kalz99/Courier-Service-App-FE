@@ -1,62 +1,137 @@
-import React, { useState } from 'react';
-import { CustomerShipmentsTable, TrackingModal } from '../components/ui';
-import { useCustomerShipments } from '../hooks/useCustomerShipments';
-import { AlertCircle, RefreshCw } from 'lucide-react';
+import React, {
+    useState,
+} from "react";
 
-export const CustomerShipments: React.FC = () => {
-    const { shipments, loading, error, refreshShipments } = useCustomerShipments();
+import {
+    AlertCircle,
+    RefreshCw,
+} from "lucide-react";
 
-    const [trackedNumber, setTrackedNumber] = useState<string | null>(null);
+import {
+    CustomerShipmentsTable,
+    TrackingModal,
+} from "../components/ui";
 
-    const handleTrackShipment = (trackingNumber: string) => {
-        setTrackedNumber(trackingNumber);
-    };
+import { useCustomerShipments } from "../hooks/useCustomerShipments";
 
-    const handleCloseModal = () => {
-        setTrackedNumber(null);
-    };
+export const CustomerShipments: React.FC =
+    () => {
+        const {
+            loading,
+            error,
+            searchTerm,
+            setSearchTerm,
+            statusFilter,
+            setStatusFilter,
+            copiedId,
+            handleCopy,
+            currentPage,
+            setCurrentPage,
+            totalPages,
+            paginatedShipments,
+            startIndex,
+            endIndex,
+            refreshShipments,
+            shipments,
+        } = useCustomerShipments();
 
-    return (
-        <div className="flex flex-col gap-6 w-full animate-fade-in p-1 md:p-2 box-border">
+        const [
+            selectedTrackingNumber,
+            setSelectedTrackingNumber,
+        ] = useState<
+            string | null
+        >(null);
 
-            {error && (
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4.5 bg-red-500/10 dark:bg-red-500/15 border border-red-500/20 rounded-2xl animate-fade-in shadow-[0_4px_12px_rgba(239,68,68,0.05)]">
-                    <div className="flex items-center gap-3">
-                        <div className="p-2 bg-red-500/10 border border-red-500/15 text-red-600 dark:text-red-400 rounded-lg shrink-0">
-                            <AlertCircle className="w-5 h-5" />
+        const handleTrackShipment =
+            (
+                trackingNumber: string
+            ) => {
+                setSelectedTrackingNumber(
+                    trackingNumber
+                );
+            };
+
+        const handleCloseModal =
+            () => {
+                setSelectedTrackingNumber(
+                    null
+                );
+            };
+
+        return (
+            <div className="flex flex-col gap-6 w-full p-1 md:p-2 animate-fade-in">
+
+                {error && (
+                    <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-4.5 bg-red-500/10 dark:bg-red-500/15 border border-red-500/20 rounded-2xl shadow-[0_4px_12px_rgba(239,68,68,0.05)]">
+
+                        <div className="flex items-center gap-3">
+
+                            <div className="p-2 rounded-lg border border-red-500/15 bg-red-500/10 text-red-600 dark:text-red-400 shrink-0">
+                                <AlertCircle className="w-5 h-5" />
+                            </div>
+
+                            <div className="flex flex-col gap-0.5">
+
+                                <span className="text-sm font-bold text-[var(--color-text-primary)]">
+                                    Failed to Load Shipments
+                                </span>
+
+                                <span className="text-xs font-medium leading-relaxed text-[var(--color-text-muted)]">
+                                    {error}
+                                </span>
+
+                            </div>
                         </div>
-                        <div className="flex flex-col gap-0.5">
-                            <span className="text-sm font-bold text-[var(--color-text-primary)]">
-                                Failed to Load Shipment Data
-                            </span>
-                            <span className="text-xs text-[var(--color-text-muted)] font-medium leading-relaxed">
-                                {error}
-                            </span>
-                        </div>
+
+                        <button
+                            type="button"
+                            onClick={
+                                refreshShipments
+                            }
+                            className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-red-500/20 bg-red-500/10 hover:bg-red-500/20 text-xs font-bold text-red-600 dark:text-red-400 transition-all duration-200 cursor-pointer shrink-0"
+                        >
+                            <RefreshCw className="w-3.5 h-3.5" />
+
+                            Retry
+                        </button>
+
                     </div>
-                    <button
-                        onClick={refreshShipments}
-                        className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold text-red-600 dark:text-red-400 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-xl transition-all duration-200 hover:scale-105 active:scale-98 cursor-pointer shrink-0"
-                    >
-                        <RefreshCw className="w-3.5 h-3.5 animate-spin-slow" />
-                        Retry Connection
-                    </button>
-                </div>
-            )}
+                )}
 
-            <CustomerShipmentsTable
-                shipments={shipments}
-                isLoading={loading}
-                onTrackShipment={handleTrackShipment}
-            />
+                <CustomerShipmentsTable
+                    paginatedShipments={paginatedShipments}
+                    isLoading={loading}
+                    onTrackShipment={handleTrackShipment}
+                    searchTerm={searchTerm}
+                    onSearchChange={setSearchTerm}
+                    statusFilter={statusFilter}
+                    onStatusFilterChange={setStatusFilter}
+                    currentPage={currentPage}
+                    onPageChange={setCurrentPage}
+                    totalPages={totalPages}
+                    startIndex={startIndex}
+                    endIndex={endIndex}
+                    copiedId={copiedId}
+                    onCopy={handleCopy}
+                    totalShipmentsCount={shipments.length}
+                />
 
-            <TrackingModal
-                isOpen={trackedNumber !== null}
-                onClose={handleCloseModal}
-                trackingNumber={trackedNumber}
-            />
-        </div>
-    );
-};
+                <TrackingModal
+                    isOpen={
+                        Boolean(
+                            selectedTrackingNumber
+                        )
+                    }
+                    onClose={
+                        handleCloseModal
+                    }
+                    trackingNumber={
+                        selectedTrackingNumber
+                    }
+                />
+
+            </div>
+        );
+    };
 
 export default CustomerShipments;
