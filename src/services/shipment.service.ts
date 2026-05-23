@@ -44,6 +44,9 @@ const mapShipment = (
         weight: `${shipment.weight} kg`,
         status: getMappedStatus(shipment.status),
         date: shipment.created_at.split("T")[0],
+        customerName: shipment.customer_name,
+        customerPhoneNumber: shipment.customer_phone_number,
+        customerAddress: shipment.customer_address,
     };
 };
 

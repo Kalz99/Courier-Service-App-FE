@@ -95,13 +95,28 @@ export const ShipmentRow: React.FC<ShipmentRowProps> = React.memo(({
             {/* Admin-only Customer Details Column */}
             {role === 'admin' && (
                 <td className="py-4.5 px-6">
-                    <div className="flex flex-col gap-1">
-                        <span className="font-bold text-[var(--color-text-primary)] text-sm leading-tight">
-                            {customerName}
+                    <div className="flex flex-col gap-1.5">
+                        <span className="font-bold text-[var(--color-text-primary)] flex items-center gap-1.5 text-sm">
+                            <User className="w-3.5 h-3.5 text-primary shrink-0 opacity-80" />
+                            {shipment.customerName || customerName}
                         </span>
-                        <span className="text-[11px] text-[var(--color-text-muted)] font-medium leading-none truncate max-w-[160px]" title={customerEmail}>
-                            {customerEmail}
-                        </span>
+                        {shipment.customerPhoneNumber && (
+                            <span className="text-xs text-[var(--color-text-muted)] font-medium flex items-center gap-1.5 leading-none">
+                                <Phone className="w-3 h-3 text-[var(--color-text-muted)]/70 shrink-0" />
+                                {shipment.customerPhoneNumber}
+                            </span>
+                        )}
+                        {shipment.customerAddress && (
+                            <span className="text-xs text-[var(--color-text-muted)]/90 font-medium flex items-start gap-1.5 leading-snug">
+                                <MapPin className="w-3.5 h-3.5 text-[var(--color-text-muted)]/70 shrink-0 mt-0.5" />
+                                {shipment.customerAddress}
+                            </span>
+                        )}
+                        {!shipment.customerPhoneNumber && !shipment.customerAddress && (
+                            <span className="text-[11px] text-[var(--color-text-muted)] font-medium leading-none truncate max-w-[160px]" title={customerEmail}>
+                                {customerEmail}
+                            </span>
+                        )}
                     </div>
                 </td>
             )}

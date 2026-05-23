@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { 
-    Users, 
-    Building2, 
-    Phone, 
-    Mail, 
-    MapPin, 
-    Package, 
+import {
+    Users,
+    Building2,
+    Phone,
+    Mail,
+    MapPin,
+    Package,
     Search,
     Loader2,
     RefreshCw
@@ -51,31 +51,6 @@ export const CustomersPage: React.FC = () => {
 
     return (
         <div className="flex flex-col gap-6 w-full p-1 md:p-2 animate-fade-in">
-            {/* Header section with Stats summary */}
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-2xl p-5 md:p-6 shadow-sm">
-                <div className="flex items-center gap-3.5">
-                    <div className="p-3.5 bg-primary/10 rounded-xl text-primary">
-                        <Users className="w-6.5 h-6.5" />
-                    </div>
-                    <div>
-                        <h2 className="text-xl font-bold text-[var(--color-text-primary)]">Customers Directory</h2>
-                        <p className="text-sm text-[var(--color-text-muted)] font-medium mt-0.5">
-                            Manage shipper accounts, corporate clients, and their lifetime statistics.
-                        </p>
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-2 self-stretch md:self-auto justify-end">
-                    <button
-                        onClick={fetchCustomers}
-                        disabled={loading}
-                        className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-[var(--sidebar-border)] bg-[var(--app-bg)] hover:bg-[var(--sidebar-active-bg)]/10 text-xs font-bold text-[var(--color-text-primary)] transition-all cursor-pointer disabled:opacity-50"
-                    >
-                        <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
-                        Refresh
-                    </button>
-                </div>
-            </div>
 
             {/* Filter / Search Bar */}
             <div className="flex flex-col gap-4 w-full bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-2xl p-4 shadow-sm">
@@ -122,8 +97,8 @@ export const CustomersPage: React.FC = () => {
                             </thead>
                             <tbody className="divide-y divide-[var(--sidebar-border)]/50 text-sm">
                                 {filteredCustomers.map((customer) => (
-                                    <tr 
-                                        key={customer.email} 
+                                    <tr
+                                        key={customer.email}
                                         className="transition-colors duration-150 hover:bg-[var(--sidebar-active-bg)]/5"
                                     >
                                         {/* Avatar / Name */}
@@ -150,11 +125,11 @@ export const CustomersPage: React.FC = () => {
                                         <td className="py-4 px-6">
                                             <div className="flex flex-col gap-1.5">
                                                 <span className="text-[var(--color-text-muted)] font-semibold flex items-center gap-1.5 text-xs">
-                                                    <Phone className="w-3.5 h-3.5 text-primary opacity-80" /> 
+                                                    <Phone className="w-3.5 h-3.5 text-primary opacity-80" />
                                                     {customer.mobile}
                                                 </span>
                                                 <span className="text-[var(--color-text-muted)] font-semibold flex items-center gap-1.5 text-xs">
-                                                    <Mail className="w-3.5 h-3.5 text-emerald-500 opacity-80" /> 
+                                                    <Mail className="w-3.5 h-3.5 text-emerald-500 opacity-80" />
                                                     {customer.email}
                                                 </span>
                                             </div>
