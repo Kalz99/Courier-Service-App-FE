@@ -92,7 +92,6 @@ export const TrackingPage: React.FC = () => {
                     isOpen={Boolean(searchNumber)}
                     onClose={() => setSearchNumber(null)}
                     trackingNumber={searchNumber}
-                    forceLight
                 />
 
                 <div className="text-center mt-4">

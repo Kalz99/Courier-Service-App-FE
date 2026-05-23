@@ -5,39 +5,42 @@ import {
     useMemo,
 } from "react";
 
-import { getAdminShipmentsApi, updateShipmentStatusApi } from "../services/shipment.service";
+import { getAllAdminShipmentsApi, updateShipmentStatusApi } from "../services/shipment.service";
 import type { Shipment } from "../types/customershipment.types";
 import { useToast } from "../context/ToastContext";
 
+const ITEMS_PER_PAGE = 10;
+
 export const useAdminShipments = () => {
     const { showToast } = useToast();
-    const [shipments, setShipments] = useState<Shipment[]>([]);
+
+    // ─── Raw server data ──────────────────────────────────────────────
+    const [allShipments, setAllShipments] = useState<Shipment[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
+    // ─── Filter state ─────────────────────────────────────────────────
     const [searchTerm, setSearchTerm] = useState("");
     const [statusFilter, setStatusFilter] = useState("all");
-
     const [startDate, setStartDate] = useState("");
     const [endDate, setEndDate] = useState("");
 
+    // ─── Pagination state ─────────────────────────────────────────────
+    const [currentPage, setCurrentPage] = useState(1);
+
+    // ─── Clipboard state ──────────────────────────────────────────────
     const [copiedId, setCopiedId] = useState<string | null>(null);
 
-    const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 10;
-
-    const fetchShipments = useCallback(async (page: number, search?: string) => {
+    // ─── Initial fetch (all records, client handles pagination) ───────
+    const fetchShipments = useCallback(async () => {
         setLoading(true);
         setError(null);
-
         try {
-            const data = await getAdminShipmentsApi(page, itemsPerPage, search);
-            setShipments(data);
-        } catch (error: unknown) {
-            let message = "Failed to load shipments";
-            if (error instanceof Error) {
-                message = error.message;
-            }
+            const data = await getAllAdminShipmentsApi();
+            setAllShipments(data);
+        } catch (err: unknown) {
+            const message =
+                err instanceof Error ? err.message : "Failed to load shipments";
             setError(message);
         } finally {
             setLoading(false);
@@ -45,154 +48,165 @@ export const useAdminShipments = () => {
     }, []);
 
     useEffect(() => {
-        const delayDebounceFn = setTimeout(() => {
-            fetchShipments(currentPage, searchTerm);
-        }, 400);
+        fetchShipments();
+    }, [fetchShipments]);
 
-        return () => clearTimeout(delayDebounceFn);
-    }, [fetchShipments, currentPage, searchTerm]);
-
+    // ─── Reset to page 1 whenever filters change ──────────────────────
     useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm, statusFilter, startDate, endDate]);
 
-    const handleCopy = useCallback((e: React.MouseEvent, trackingNum: string) => {
-        e.stopPropagation();
-        if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
-            navigator.clipboard.writeText(trackingNum)
-                .then(() => {
-                    setCopiedId(trackingNum);
-                    setTimeout(() => setCopiedId(null), 1500);
-                })
-                .catch(() => fallbackCopy(trackingNum));
-        } else {
-            fallbackCopy(trackingNum);
-        }
-    }, []);
+    // ─── Debounced search: no extra fetch needed ──────────────────────
+    // (all data is already in memory)
 
-    const fallbackCopy = (trackingNum: string) => {
-        try {
-            const textArea = document.createElement("textarea");
-            textArea.value = trackingNum;
-            textArea.style.position = "fixed";
-            textArea.style.top = "0";
-            textArea.style.left = "0";
-            textArea.style.width = "2em";
-            textArea.style.height = "2em";
-            textArea.style.padding = "0";
-            textArea.style.border = "none";
-            textArea.style.outline = "none";
-            textArea.style.boxShadow = "none";
-            textArea.style.background = "transparent";
-            document.body.appendChild(textArea);
-            textArea.focus();
-            textArea.select();
-            const success = document.execCommand("copy");
-            document.body.removeChild(textArea);
-            if (success) {
-                setCopiedId(trackingNum);
-                setTimeout(() => setCopiedId(null), 1500);
-            }
-        } catch (err) {
-            console.error("Secure copy fallback failed", err);
-        }
-    };
+    // ─── Client-side filtering ────────────────────────────────────────
+    const filteredShipments = useMemo(() => {
+        const term = searchTerm.toLowerCase();
+        return allShipments.filter((s) => {
+            const matchesSearch =
+                !term ||
+                s.trackingNumber.toLowerCase().includes(term) ||
+                s.recipient.name.toLowerCase().includes(term) ||
+                s.recipient.address.toLowerCase().includes(term) ||
+                (s.customerName ?? "").toLowerCase().includes(term) ||
+                (s.packageName ?? "").toLowerCase().includes(term);
 
-    const handleUpdateStatus = useCallback(async (id: string, newStatus: string) => {
-        try {
-            const existingShipment = shipments.find(s => s.id === id);
-            if (existingShipment) {
-                const STATUS_PROGRESSION = ["pending", "in_transit", "out_for_delivery", "delivered"];
-                const currentIndex = STATUS_PROGRESSION.indexOf(existingShipment.status);
-                const nextIndex = STATUS_PROGRESSION.indexOf(newStatus);
-                if (nextIndex < currentIndex) {
+            const matchesStatus =
+                statusFilter === "all" || s.status === statusFilter;
+
+            const matchesDate =
+                (!startDate || s.date >= startDate) &&
+                (!endDate || s.date <= endDate);
+
+            return matchesSearch && matchesStatus && matchesDate;
+        });
+    }, [allShipments, searchTerm, statusFilter, startDate, endDate]);
+
+    // ─── Derived pagination values ────────────────────────────────────
+    const totalPages = useMemo(
+        () => Math.max(1, Math.ceil(filteredShipments.length / ITEMS_PER_PAGE)),
+        [filteredShipments.length]
+    );
+
+    const paginatedShipments = useMemo(() => {
+        const start = (currentPage - 1) * ITEMS_PER_PAGE;
+        return filteredShipments.slice(start, start + ITEMS_PER_PAGE);
+    }, [filteredShipments, currentPage]);
+
+    const startIndex = useMemo(
+        () => (filteredShipments.length === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1),
+        [filteredShipments.length, currentPage]
+    );
+
+    const endIndex = useMemo(
+        () => Math.min(currentPage * ITEMS_PER_PAGE, filteredShipments.length),
+        [filteredShipments.length, currentPage]
+    );
+
+    // ─── Status update ────────────────────────────────────────────────
+    const handleUpdateStatus = useCallback(
+        async (id: string, newStatus: string) => {
+            const STATUS_PROGRESSION = [
+                "pending",
+                "in_transit",
+                "out_for_delivery",
+                "delivered",
+            ] as const;
+
+            const existing = allShipments.find((s) => s.id === id);
+            if (existing) {
+                const currentIdx = STATUS_PROGRESSION.indexOf(existing.status as any);
+                const nextIdx = STATUS_PROGRESSION.indexOf(newStatus as any);
+                if (nextIdx < currentIdx) {
                     showToast("Cannot revert to a previous shipment status.", "warning");
                     return;
                 }
             }
 
-
             const statusMap: Record<string, string> = {
                 pending: "Pending",
                 in_transit: "In Transit",
                 out_for_delivery: "Out for Delivery",
-                delivered: "Delivered"
+                delivered: "Delivered",
             };
-            const mappedStatus = statusMap[newStatus] || "Pending";
 
-            await updateShipmentStatusApi(id, mappedStatus);
-            setShipments(prev => prev.map(s => s.id === id ? { ...s, status: newStatus as any } : s));
-        } catch (err: any) {
-            showToast(err?.response?.data?.message || "Failed to update status.", "error");
+            try {
+                await updateShipmentStatusApi(id, statusMap[newStatus] ?? "Pending");
+                setAllShipments((prev) =>
+                    prev.map((s) =>
+                        s.id === id ? { ...s, status: newStatus as Shipment["status"] } : s
+                    )
+                );
+            } catch (err: any) {
+                showToast(
+                    err?.response?.data?.message ?? "Failed to update status.",
+                    "error"
+                );
+            }
+        },
+        [allShipments, showToast]
+    );
+
+    // ─── Clipboard helpers ────────────────────────────────────────────
+    const handleCopy = useCallback((e: React.MouseEvent, trackingNum: string) => {
+        e.stopPropagation();
+        const copy = () => {
+            setCopiedId(trackingNum);
+            setTimeout(() => setCopiedId(null), 1500);
+        };
+
+        if (navigator.clipboard?.writeText) {
+            navigator.clipboard.writeText(trackingNum).then(copy).catch(fallbackCopy);
+        } else {
+            fallbackCopy(trackingNum);
         }
-    }, [shipments]);
 
-    const filteredShipments = useMemo(() => {
-        return shipments.filter((shipment) => {
-            const matchesSearch =
-                shipment.trackingNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                shipment.recipient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                shipment.recipient.address.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                (shipment.packageName && shipment.packageName.toLowerCase().includes(searchTerm.toLowerCase()));
-
-            const matchesStatus = statusFilter === "all" || shipment.status === statusFilter;
-
-            let matchesDate = true;
-            if (startDate) {
-                matchesDate = matchesDate && shipment.date >= startDate;
+        function fallbackCopy(num: string = trackingNum) {
+            try {
+                const ta = document.createElement("textarea");
+                Object.assign(ta.style, {
+                    position: "fixed", top: "0", left: "0",
+                    width: "2em", height: "2em", padding: "0",
+                    border: "none", outline: "none",
+                    boxShadow: "none", background: "transparent",
+                });
+                ta.value = num;
+                document.body.appendChild(ta);
+                ta.focus();
+                ta.select();
+                if (document.execCommand("copy")) copy();
+                document.body.removeChild(ta);
+            } catch (err) {
+                console.error("Clipboard fallback failed", err);
             }
-            if (endDate) {
-                matchesDate = matchesDate && shipment.date <= endDate;
-            }
-
-            return matchesSearch && matchesStatus && matchesDate;
-        });
-    }, [shipments, searchTerm, statusFilter, startDate, endDate]);
-
-    const totalPages = useMemo(() => {
-        return Math.max(1, Math.ceil(filteredShipments.length / itemsPerPage));
-    }, [filteredShipments]);
-
-    const paginatedShipments = useMemo(() => {
-        const startIndex = (currentPage - 1) * itemsPerPage;
-        return filteredShipments.slice(startIndex, startIndex + itemsPerPage);
-    }, [filteredShipments, currentPage]);
-
-    const startIndex = useMemo(() => {
-        if (filteredShipments.length === 0) return 0;
-        return (currentPage - 1) * itemsPerPage + 1;
-    }, [filteredShipments, currentPage]);
-
-    const endIndex = useMemo(() => {
-        return Math.min(currentPage * itemsPerPage, filteredShipments.length);
-    }, [filteredShipments, currentPage]);
+        }
+    }, []);
 
     return {
+        /** All shipments after client-side filtering (used for counts). */
         shipments: filteredShipments,
+        /** Only the records for the current page. */
+        paginatedShipments,
         loading,
         error,
         searchTerm,
         setSearchTerm,
         statusFilter,
         setStatusFilter,
+        startDate,
+        endDate,
+        onStartDateChange: setStartDate,
+        onEndDateChange: setEndDate,
+        onClearDates: () => { setStartDate(""); setEndDate(""); },
         copiedId,
         handleCopy,
         currentPage,
         setCurrentPage,
         totalPages,
-        paginatedShipments,
         startIndex,
         endIndex,
         handleUpdateStatus,
-        startDate,
-        endDate,
-        onStartDateChange: setStartDate,
-        onEndDateChange: setEndDate,
-        onClearDates: () => {
-            setStartDate("");
-            setEndDate("");
-        },
-        refreshShipments: () => fetchShipments(currentPage, searchTerm)
+        refreshShipments: fetchShipments,
     };
 };
 

@@ -99,7 +99,9 @@ export const Layout: React.FC<LayoutProps> = ({
           </button>
         </header>
 
-        {children ? children : <Outlet />}
+        <div className="flex-1 min-h-0 flex flex-col px-0">
+          {children ? children : <Outlet />}
+        </div>
       </main>
     </div>
   );

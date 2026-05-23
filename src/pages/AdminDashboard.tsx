@@ -38,7 +38,7 @@ const AdminDashboard: React.FC = () => {
   ];
 
   return (
-    <div className="flex flex-col gap-8 w-full animate-fade-in">
+    <div className="flex flex-col gap-6 w-full h-full">
       <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 w-full">
         {stats.map((stat) => (
           <StatCard
@@ -51,12 +51,12 @@ const AdminDashboard: React.FC = () => {
         ))}
       </section>
 
-      <section className="grid grid-cols-1 lg:grid-cols-3 gap-6 w-full items-stretch">
-        <div className="lg:col-span-2">
-          <ParcelChart />
+      <section className="flex-1 min-h-0 grid grid-cols-1 xl:grid-cols-3 gap-6 w-full items-stretch">
+        <div className="xl:col-span-2 flex flex-col min-h-0">
+          <ParcelChart className="flex-1 min-h-0" />
         </div>
-        <div className="lg:col-span-1">
-          <TopCustomersWidget />
+        <div className="xl:col-span-1 flex flex-col min-h-0">
+          <TopCustomersWidget className="flex-1 min-h-0" />
         </div>
       </section>
     </div>

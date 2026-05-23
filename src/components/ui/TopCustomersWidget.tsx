@@ -2,11 +2,15 @@ import React from 'react';
 import { Award, Phone, Briefcase, Loader2, Package, Crown } from 'lucide-react';
 import { useTopCustomers } from '../../hooks/useTopCustomers';
 
-export const TopCustomersWidget: React.FC = React.memo(() => {
+export interface TopCustomersWidgetProps {
+    className?: string;
+}
+
+export const TopCustomersWidget: React.FC<TopCustomersWidgetProps> = React.memo(({ className = '' }) => {
     const { topCustomers, isLoading, error } = useTopCustomers();
 
     return (
-        <div className="w-full h-full bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-[24px] p-5 md:p-6 shadow-[var(--sidebar-shadow)] flex flex-col gap-5 justify-between">
+        <div className={`w-full h-full bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-[24px] p-5 md:p-6 shadow-[var(--sidebar-shadow)] flex flex-col gap-5 justify-between ${className}`}>
 
             {/* Header Title Section */}
             <div className="flex items-center gap-3 select-none">

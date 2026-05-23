@@ -64,6 +64,15 @@ export const getAdminShipmentsApi = async (page: number = 1, limit: number = 10,
     return response.data.data.map(mapShipment);
 };
 
+/** Fetch ALL admin shipments in one request for local filtering & pagination. */
+export const getAllAdminShipmentsApi = async (): Promise<Shipment[]> => {
+    const response = await API.get<GetShipmentsResponse>(
+        "/admin/get-shipment",
+        { params: { limit: 10000, offset: 0 } }
+    );
+    return response.data.data.map(mapShipment);
+};
+
 export const getCustomerShipmentsApi = async (tracking?: string): Promise<Shipment[]> => {
     const response = await API.get<GetShipmentsResponse>(
         "/shipments/get-my-shipment",
