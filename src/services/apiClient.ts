@@ -1,11 +1,24 @@
-import axios from 'axios';
+import axios from "axios";
+import type {
+  AxiosError,
+  InternalAxiosRequestConfig,
+} from "axios";
 
-// Transient memory state for the access token JWT (insulated from XSS/localStorage)
+// Store access token in memory
 let inMemoryToken: string | null = null;
 
-// Bridge callbacks to keep React state and Axios interceptor in perfect sync
-let updateReactTokenCallback: ((token: string | null) => void) | null = null;
+// Auth state callbacks
+let updateTokenCallback: ((token: string | null) => void) | null = null;
 let sessionExpiredCallback: (() => void) | null = null;
+
+interface FailedRequest {
+  resolve: (token: string | null) => void;
+  reject: (error: unknown) => void;
+}
+
+interface RetryRequestConfig extends InternalAxiosRequestConfig {
+  _retry?: boolean;
+}
 
 export const setInMemoryToken = (token: string | null) => {
   inMemoryToken = token;
@@ -15,101 +28,100 @@ export const registerAuthCallbacks = (
   onTokenUpdate: (token: string | null) => void,
   onSessionExpired: () => void
 ) => {
-  updateReactTokenCallback = onTokenUpdate;
+  updateTokenCallback = onTokenUpdate;
   sessionExpiredCallback = onSessionExpired;
 };
 
 const API = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
+  withCredentials: true,
 });
 
-// Outbound request interceptor: Inject the bearer Access Token from transient memory
-API.interceptors.request.use((config) => {
+// Attach access token to requests
+API.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   if (inMemoryToken) {
     config.headers.Authorization = `Bearer ${inMemoryToken}`;
   }
-  // Crucial: Forward HttpOnly credentials (the Refresh Token cookie) behind the scenes
-  config.withCredentials = true;
   return config;
 });
 
-// Queuing states to handle concurrent API calls during silent refresh cycles
 let isRefreshing = false;
-let failedQueue: any[] = [];
+let failedQueue: FailedRequest[] = [];
 
-const processQueue = (error: any, token: string | null = null) => {
-  failedQueue.forEach((prom) => {
+const processQueue = (error: unknown, token: string | null = null) => {
+  failedQueue.forEach(({ resolve, reject }) => {
     if (error) {
-      prom.reject(error);
+      reject(error);
     } else {
-      prom.resolve(token);
+      resolve(token);
     }
   });
   failedQueue = [];
 };
 
-// Inbound response interceptor: Silently renew token on 401 and retry original request
+// Handle token refresh on 401 errors
 API.interceptors.response.use(
   (response) => response,
-  async (error) => {
-    const originalRequest = error.config;
+  async (error: AxiosError) => {
+    const originalRequest = error.config as RetryRequestConfig | undefined;
 
-    // If request fails due to token expiration, and wasn't already a refresh retry
-    if (
-      error.response?.status === 401 &&
-      !originalRequest._retry &&
-      !originalRequest.url?.includes('/auth/refresh') &&
-      !originalRequest.url?.includes('/auth/login') &&
-      !originalRequest.url?.includes('/auth/register')
-    ) {
+    if (!originalRequest || !error.response) {
+      return Promise.reject(error);
+    }
+
+    const isUnauthorized = error.response.status === 401;
+    const isAuthRoute = ["/auth/login", "/auth/register", "/auth/refresh"].some(
+      (route) => originalRequest.url?.includes(route)
+    );
+
+    if (isUnauthorized && !originalRequest._retry && !isAuthRoute) {
       if (isRefreshing) {
-        // Queue other concurrent requests while the renewal is pending
-        return new Promise((resolve, reject) => {
-          failedQueue.push({ resolve, reject });
-        })
-          .then((token) => {
+        try {
+          const token = await new Promise<string | null>((resolve, reject) => {
+            failedQueue.push({ resolve, reject });
+          });
+          if (token) {
             originalRequest.headers.Authorization = `Bearer ${token}`;
-            return API(originalRequest);
-          })
-          .catch((err) => Promise.reject(err));
+          }
+          return API(originalRequest);
+        } catch (err) {
+          return Promise.reject(err);
+        }
       }
 
       originalRequest._retry = true;
       isRefreshing = true;
 
       try {
-        // Silent refresh utilizing the secure HttpOnly cookie
         const response = await axios.post(
           `${import.meta.env.VITE_API_BASE_URL}/auth/refresh`,
           {},
           { withCredentials: true }
         );
-        const { accessToken } = response.data.data;
 
-        // Update in-memory JWT references
-        inMemoryToken = accessToken;
-        if (updateReactTokenCallback) {
-          updateReactTokenCallback(accessToken);
+        const accessToken = response.data?.data?.accessToken;
+        if (!accessToken) {
+          throw new Error("Access token missing");
         }
 
+        inMemoryToken = accessToken;
+        updateTokenCallback?.(accessToken);
         processQueue(null, accessToken);
-        isRefreshing = false;
 
-        // Re-execute initial failed request with the fresh token
-        originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        if (originalRequest.headers) {
+          originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+        }
+
         return API(originalRequest);
       } catch (refreshError) {
-        processQueue(refreshError, null);
-        isRefreshing = false;
-
-        // Clear session on renewal failure (refresh token expired/revoked)
-        if (sessionExpiredCallback) {
-          sessionExpiredCallback();
-        }
+        processQueue(refreshError);
+        sessionExpiredCallback?.();
         return Promise.reject(refreshError);
+      } finally {
+        isRefreshing = false;
       }
     }
 
