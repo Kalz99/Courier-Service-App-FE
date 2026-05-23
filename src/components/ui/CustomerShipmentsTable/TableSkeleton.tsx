@@ -1,6 +1,11 @@
 import React from 'react';
 
-export const TableSkeleton: React.FC = React.memo(() => {
+export interface TableSkeletonProps {
+    role?: 'admin' | 'customer';
+}
+
+export const TableSkeleton: React.FC<TableSkeletonProps> = React.memo(({ role = 'customer' }) => {
+    const isAdmin = role === 'admin';
     return (
         <>
             {Array.from({ length: 5 }).map((_, index) => (
@@ -12,6 +17,16 @@ export const TableSkeleton: React.FC = React.memo(() => {
                             <div className="w-8 h-8 rounded-md bg-[var(--sidebar-border)]/40 animate-pulse shrink-0" />
                         </div>
                     </td>
+
+                    {/* Sender / Customer details (Admin Only) */}
+                    {isAdmin && (
+                        <td className="py-4.5 px-6">
+                            <div className="flex flex-col gap-2">
+                                <div className="h-4 w-36 bg-[var(--sidebar-border)]/40 rounded animate-pulse" />
+                                <div className="h-3 w-28 bg-[var(--sidebar-border)]/40 rounded animate-pulse" />
+                            </div>
+                        </td>
+                    )}
 
                     {/* Recipient Details column */}
                     <td className="py-4.5 px-6">

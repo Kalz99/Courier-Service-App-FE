@@ -1,16 +1,17 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/layout/ProtectedRoute';
-import AdminShipments from './pages/AdminShipment';
-import Dashboard from './pages/Dashboard';
-import AddShipment from './pages/AddShipment';
-import CustomerShipments from './pages/CustomerShipments';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import TrackingPage from './pages/TrackingPage';
-import CustomersPage from './pages/CustomersPage';
 import { LayoutDashboard, Truck, Settings as SettingsIcon, Compass, Users } from 'lucide-react';
+
+const Login = lazy(() => import('./pages/Login'));
+const Register = lazy(() => import('./pages/Register'));
+const TrackingPage = lazy(() => import('./pages/TrackingPage'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const AdminShipments = lazy(() => import('./pages/AdminShipment'));
+const CustomersPage = lazy(() => import('./pages/CustomersPage'));
+const AddShipment = lazy(() => import('./pages/AddShipment'));
+const CustomerShipments = lazy(() => import('./pages/CustomerShipments'));
 
 export interface SidebarRouteConfig {
     path: string;
@@ -20,36 +21,19 @@ export interface SidebarRouteConfig {
 }
 
 export const sidebarRoutes: SidebarRouteConfig[] = [
-    {
-        path: '/dashboard',
-        label: 'Dashboard',
-        icon: LayoutDashboard,
-    },
-    {
-        path: '/shipments',
-        label: 'Shipments',
-        icon: Truck,
-        badge: 2,
-    },
-    {
-        path: '/customershipments',
-        label: 'My Shipments',
-        icon: Compass,
-    },
-    {
-        path: '/customers',
-        label: 'Customers',
-        icon: Users,
-    },
-    {
-        path: '/settings',
-        label: 'Settings',
-        icon: SettingsIcon,
-    },
+    { path: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { path: '/shipments', label: 'Shipments', icon: Truck },
+    { path: '/customershipments', label: 'My Shipments', icon: Compass },
+    { path: '/customers', label: 'Customers', icon: Users },
+    { path: '/settings', label: 'Settings', icon: SettingsIcon },
 ];
 
+const PageLoader: React.FC = () => (
+    <div className="flex items-center justify-center min-h-[400px] w-full">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+    </div>
+);
 
-// Settings Page (Modular subview)
 const SettingsPage: React.FC = () => {
     return (
         <div className="flex flex-col gap-8 w-full animate-fade-in">
@@ -59,7 +43,7 @@ const SettingsPage: React.FC = () => {
                 </span>
                 <h3 className="text-xl font-bold text-[var(--color-text-primary)] mb-2.5">System Configuration</h3>
                 <p className="text-sm text-[var(--color-text-muted)] leading-relaxed max-w-[400px] mb-7">
-                     Manage your account settings, dark mode preferences, logistics API keys, and notification thresholds.
+                    Manage your account settings, dark mode preferences, logistics API keys, and notification thresholds.
                 </p>
                 <button
                     type="button"
@@ -73,7 +57,6 @@ const SettingsPage: React.FC = () => {
     );
 };
 
-// NotFound Page
 const NotFoundPage: React.FC = () => {
     return (
         <div className="flex flex-col items-center justify-center text-center grow bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-3xl p-8 md:p-12 shadow-[var(--sidebar-shadow)] max-w-[600px] m-auto transition-colors duration-250 animate-fade-in">
@@ -93,45 +76,49 @@ const NotFoundPage: React.FC = () => {
 
 const AppRoutes: React.FC = () => {
     return (
-        <Routes>
-            <Route path="/" element={<Navigate to="/login" replace />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/tracking" element={<TrackingPage />} />
+        <Suspense fallback={<PageLoader />}>
+            <Routes>
+                <Route path="/" element={<Navigate to="/login" replace />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/tracking" element={<TrackingPage />} />
 
-            {/* Guarded Routes - Accessible to all Authenticated Users */}
-            <Route element={<ProtectedRoute allowedRoles={['admin', 'customer']} />}>
-                <Route element={<Layout name="Dashboard" />}>
-                    <Route path="dashboard" element={<Dashboard />} />
-                </Route>
-                <Route element={<Layout name="Settings" />}>
-                    <Route path="settings" element={<SettingsPage />} />
+                {/* Guarded Routes - Accessible to all Authenticated Users */}
+                <Route element={<ProtectedRoute allowedRoles={['admin', 'customer']} />}>
+                    <Route element={<Layout name="Dashboard" />}>
+                        <Route path="dashboard" element={<Dashboard />} />
+                    </Route>
+                    <Route element={<Layout name="Settings" />}>
+                        <Route path="settings" element={<SettingsPage />} />
+                    </Route>
+
+                    {/* Admin-only Guarded Routes */}
+                    <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
+                        <Route element={<Layout name="Shipments" />}>
+                            <Route path="shipments" element={<AdminShipments />} />
+                        </Route>
+                        <Route element={<Layout name="Customers" />}>
+                            <Route element={<Layout name="Customers" />}>
+                                <Route path="customers" element={<CustomersPage />} />
+                            </Route>
+                        </Route>
+                    </Route>
+
+                    {/* Customer-only Guarded Routes */}
+                    <Route element={<ProtectedRoute allowedRoles={['customer']} />}>
+                        <Route element={<Layout name="Create Shipment" />}>
+                            <Route path="add-shipment" element={<AddShipment />} />
+                        </Route>
+                        <Route element={<Layout name="Customer Shipments" />}>
+                            <Route path="customershipments" element={<CustomerShipments />} />
+                        </Route>
+                    </Route>
                 </Route>
 
-                {/* Admin-only Guarded Routes */}
-                <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-                    <Route element={<Layout name="Shipments" />}>
-                        <Route path="shipments" element={<AdminShipments />} />
-                    </Route>
-                    <Route element={<Layout name="Customers" />}>
-                        <Route path="customers" element={<CustomersPage />} />
-                    </Route>
-                </Route>
-
-                {/* Customer-only Guarded Routes */}
-                <Route element={<ProtectedRoute allowedRoles={['customer']} />}>
-                    <Route element={<Layout name="Create Shipment" />}>
-                        <Route path="add-shipment" element={<AddShipment />} />
-                    </Route>
-                    <Route element={<Layout name="Customer Shipments" />}>
-                        <Route path="customershipments" element={<CustomerShipments />} />
-                    </Route>
-                </Route>
-            </Route>
-
-            <Route path="/404" element={<NotFoundPage />} />
-            <Route path="*" element={<Navigate to="/404" replace />} />
-        </Routes>
+                <Route path="/404" element={<NotFoundPage />} />
+                <Route path="*" element={<Navigate to="/404" replace />} />
+            </Routes>
+        </Suspense>
     );
 };
 
