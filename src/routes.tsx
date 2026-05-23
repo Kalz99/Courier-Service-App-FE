@@ -98,9 +98,7 @@ const AppRoutes: React.FC = () => {
                             <Route path="shipments" element={<AdminShipments />} />
                         </Route>
                         <Route element={<Layout name="Customers" />}>
-                            <Route element={<Layout name="Customers" />}>
-                                <Route path="customers" element={<CustomersPage />} />
-                            </Route>
+                            <Route path="customers" element={<CustomersPage />} />
                         </Route>
                     </Route>
 
