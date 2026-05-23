@@ -20,6 +20,9 @@ export interface Shipment {
     weight: string;
     status: "pending" | "in_transit" | "out_for_delivery" | "delivered";
     date: string;
+    customerName?: string;
+    customerPhoneNumber?: string;
+    customerAddress?: string;
 }
 
 export interface ShipmentItem {
@@ -31,6 +34,9 @@ export interface ShipmentItem {
     status: "pending" | "in_transit" | "out_for_delivery" | "delivered";
     date: string;
     weight?: string;
+    customerName?: string;
+    customerPhoneNumber?: string;
+    customerAddress?: string;
 }
 
 export interface ShipmentApiResponse {
@@ -44,6 +50,9 @@ export interface ShipmentApiResponse {
     status: string;
     user_id: string;
     created_at: string;
+    customer_name?: string;
+    customer_phone_number?: string;
+    customer_address?: string;
 }
 
 export interface GetShipmentsResponse {
@@ -60,4 +69,13 @@ export interface HorizontalTimelineProps {
 
 export interface ShipmentActivityCardProps {
     shipment: Shipment;
+}
+
+export interface CustomerInfo {
+    id: string;
+    name: string;
+    mobile: string;
+    email: string;
+    address?: string;
+    totalPackagesReceived: number;
 }

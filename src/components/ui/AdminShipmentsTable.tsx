@@ -106,6 +106,10 @@ export const AdminShipmentsTable: React.FC<AdminShipmentsTableProps> = ({
         setLocalShipments(initialShipments);
     }, [initialShipments]);
 
+    React.useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm, statusFilter]);
+
     // Filter & Search Logic
     const filteredShipments = useMemo(() => {
         return localShipments.filter((shipment) => {
@@ -174,116 +178,155 @@ export const AdminShipmentsTable: React.FC<AdminShipmentsTableProps> = ({
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-[var(--sidebar-border)]/50 text-sm">
-                            {paginatedShipments.map((shipment) => {
-                                const isCopied = copiedId === shipment.trackingNumber;
+                            {isLoading ? (
+                                <tr>
+                                    <td colSpan={6} className="py-8 text-center text-sm font-semibold text-[var(--color-text-muted)] animate-pulse">
+                                        Retrieving shipments...
+                                    </td>
+                                </tr>
+                            ) : paginatedShipments.length === 0 ? (
+                                <tr>
+                                    <td colSpan={6} className="py-8 text-center text-sm font-semibold text-[var(--color-text-muted)]">
+                                        No shipments found matching the filters.
+                                    </td>
+                                </tr>
+                            ) : (
+                                paginatedShipments.map((shipment) => {
+                                    const isCopied = copiedId === shipment.trackingNumber;
 
-                                return (
-                                    <tr key={shipment.id} className="transition-colors duration-150 hover:bg-[var(--sidebar-active-bg)]/10">
+                                    return (
+                                        <tr key={shipment.id} className="transition-colors duration-150 hover:bg-[var(--sidebar-active-bg)]/10">
 
-                                        {/* Tracking ID */}
-                                        <td className="py-3 px-6 font-mono font-semibold text-sm">
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-sm tracking-wide text-[var(--color-text-primary)]">{shipment.trackingNumber}</span>
-                                                <button
-                                                    onClick={(e) => handleCopy(e, shipment.trackingNumber)}
-                                                    className="p-1.5 rounded bg-[var(--app-bg)] border border border-[var(--sidebar-border)] transition-colors hover:bg-[var(--sidebar-border)]/20"
+                                            {/* Tracking ID */}
+                                            <td className="py-3 px-6 font-mono font-semibold text-sm">
+                                                <div className="flex items-center gap-2">
+                                                    <span className="text-sm tracking-wide text-[var(--color-text-primary)]">{shipment.trackingNumber}</span>
+                                                    <button
+                                                        onClick={(e) => handleCopy(e, shipment.trackingNumber)}
+                                                        className="p-1.5 rounded bg-[var(--app-bg)] border border border-[var(--sidebar-border)] transition-colors hover:bg-[var(--sidebar-border)]/20"
+                                                    >
+                                                        {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5 text-[var(--color-text-muted)]" />}
+                                                    </button>
+                                                </div>
+                                            </td>
+
+                                            {/* Sender Details */}
+                                            <td className="py-3 px-6 text-sm">
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="font-bold text-base text-[var(--color-text-primary)] flex items-center gap-1.5">
+                                                        <User className="w-4 h-4 opacity-70 text-primary" /> {shipment.sender.name}
+                                                    </span>
+                                                    <span className="text-sm text-[var(--color-text-muted)] font-medium">{shipment.sender.mobile}</span>
+                                                    <span className="text-sm text-[var(--color-text-muted)] font-medium flex items-start gap-1 mt-0.5">
+                                                        <MapPin className="w-3.5 h-3.5 text-zinc-400 mt-0.5 shrink-0" />
+                                                        <span className="line-clamp-2 leading-relaxed">{shipment.sender.address}</span>
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            {/* Receiver Details */}
+                                            <td className="py-3 px-6 text-sm">
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="font-bold text-base text-[var(--color-text-primary)] flex items-center gap-1.5">
+                                                        <User className="w-4 h-4 opacity-70 text-emerald-500" /> {shipment.receiver.name}
+                                                    </span>
+                                                    <span className="text-sm text-[var(--color-text-muted)] font-medium">{shipment.receiver.mobile}</span>
+                                                    <span className="text-sm text-[var(--color-text-muted)] font-medium flex items-start gap-1 mt-0.5">
+                                                        <MapPin className="w-3.5 h-3.5 text-red-400 mt-0.5 shrink-0" />
+                                                        <span className="line-clamp-2 leading-relaxed">{shipment.receiver.address}</span>
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            {/* Item About Info */}
+                                            <td className="py-3 px-6 text-sm">
+                                                <div className="flex flex-col gap-1">
+                                                    <span className="font-bold text-base text-[var(--color-text-primary)] flex items-center gap-1.5">
+                                                        <Package2 className="w-4 h-4 opacity-80 text-blue-500" /> {shipment.packageName}
+                                                    </span>
+                                                    <span className="text-sm text-[var(--color-text-muted)] font-medium">
+                                                        Type: {shipment.packageType}
+                                                    </span>
+                                                    <span className="text-sm text-[var(--color-text-primary)] font-semibold bg-zinc-100 dark:bg-zinc-800/60 px-2 py-0.5 rounded border border-[var(--sidebar-border)]/40 w-fit mt-0.5">
+                                                        Weight: {shipment.weight}
+                                                    </span>
+                                                </div>
+                                            </td>
+
+                                            {/* Editable Status Modifier */}
+                                            <td className="py-3 px-6">
+                                                <select
+                                                    value={shipment.status}
+                                                    onChange={(e) => handleStatusChange(shipment.id, e.target.value as ShipmentItem['status'])}
+                                                    className={`text-sm font-bold px-2.5 py-2 rounded-xl border border-[var(--sidebar-border)] w-full max-w-[150px] focus:outline-none transition-all cursor-pointer ${STATUS_OPTIONS.find(opt => opt.value === shipment.status)?.colorClass || ''}`}
                                                 >
-                                                    {isCopied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5 text-[var(--color-text-muted)]" />}
-                                                </button>
-                                            </div>
-                                        </td>
+                                                    {STATUS_OPTIONS.map((opt) => (
+                                                        <option key={opt.value} value={opt.value} className="bg-white dark:bg-zinc-900 text-black dark:text-white font-medium">
+                                                            {opt.label}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </td>
 
-                                        {/* Sender Details */}
-                                        <td className="py-3 px-6 text-sm">
-                                            <div className="flex flex-col gap-1">
-                                                <span className="font-bold text-base text-[var(--color-text-primary)] flex items-center gap-1.5">
-                                                    <User className="w-4 h-4 opacity-70 text-primary" /> {shipment.sender.name}
-                                                </span>
-                                                <span className="text-sm text-[var(--color-text-muted)] font-medium">{shipment.sender.mobile}</span>
-                                                <span className="text-sm text-[var(--color-text-muted)] font-medium flex items-start gap-1 mt-0.5">
-                                                    <MapPin className="w-3.5 h-3.5 text-zinc-400 mt-0.5 shrink-0" />
-                                                    <span className="line-clamp-2 leading-relaxed">{shipment.sender.address}</span>
-                                                </span>
-                                            </div>
-                                        </td>
-
-                                        {/* Receiver Details */}
-                                        <td className="py-3 px-6 text-sm">
-                                            <div className="flex flex-col gap-1">
-                                                <span className="font-bold text-base text-[var(--color-text-primary)] flex items-center gap-1.5">
-                                                    <User className="w-4 h-4 opacity-70 text-emerald-500" /> {shipment.receiver.name}
-                                                </span>
-                                                <span className="text-sm text-[var(--color-text-muted)] font-medium">{shipment.receiver.mobile}</span>
-                                                <span className="text-sm text-[var(--color-text-muted)] font-medium flex items-start gap-1 mt-0.5">
-                                                    <MapPin className="w-3.5 h-3.5 text-red-400 mt-0.5 shrink-0" />
-                                                    <span className="line-clamp-2 leading-relaxed">{shipment.receiver.address}</span>
-                                                </span>
-                                            </div>
-                                        </td>
-
-                                        {/* Item About Info */}
-                                        <td className="py-3 px-6 text-sm">
-                                            <div className="flex flex-col gap-1">
-                                                <span className="font-bold text-base text-[var(--color-text-primary)] flex items-center gap-1.5">
-                                                    <Package2 className="w-4 h-4 opacity-80 text-blue-500" /> {shipment.packageName}
-                                                </span>
-                                                <span className="text-sm text-[var(--color-text-muted)] font-medium">
-                                                    Type: {shipment.packageType}
-                                                </span>
-                                                <span className="text-sm text-[var(--color-text-primary)] font-semibold bg-zinc-100 dark:bg-zinc-800/60 px-2 py-0.5 rounded border border-[var(--sidebar-border)]/40 w-fit mt-0.5">
-                                                    Weight: {shipment.weight}
-                                                </span>
-                                            </div>
-                                        </td>
-
-                                        {/* Editable Status Modifier */}
-                                        <td className="py-3 px-6">
-                                            <select
-                                                value={shipment.status}
-                                                onChange={(e) => handleStatusChange(shipment.id, e.target.value as ShipmentItem['status'])}
-                                                className={`text-sm font-bold px-2.5 py-2 rounded-xl border border-[var(--sidebar-border)] w-full max-w-[150px] focus:outline-none transition-all cursor-pointer ${STATUS_OPTIONS.find(opt => opt.value === shipment.status)?.colorClass || ''}`}
-                                            >
-                                                {STATUS_OPTIONS.map((opt) => (
-                                                    <option key={opt.value} value={opt.value} className="bg-white dark:bg-zinc-900 text-black dark:text-white font-medium">
-                                                        {opt.label}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </td>
-
-                                        {/* Row Actions: View, Print, Delete */}
-                                        <td className="py-3 px-6 text-center">
-                                            <div className="flex items-center justify-center gap-2">
-                                                <button
-                                                    onClick={() => onViewShipment?.(shipment.id)}
-                                                    title="View Shipment Details"
-                                                    className="p-2 text-[var(--color-text-muted)] hover:text-primary transition-colors border border-[var(--sidebar-border)] rounded-lg hover:bg-[var(--app-bg)] shadow-sm"
-                                                >
-                                                    <Eye className="w-4 h-4" />
-                                                </button>
-                                                <button
-                                                    onClick={() => onPrintLabel?.(shipment.id)}
-                                                    title="Print Shipping Label"
-                                                    className="p-2 text-[var(--color-text-muted)] hover:text-blue-500 transition-colors border border-[var(--sidebar-border)] rounded-lg hover:bg-[var(--app-bg)] shadow-sm"
-                                                >
-                                                    <Printer className="w-4 h-4" />
-                                                </button>
-                                                <button
-                                                    onClick={() => onDeleteShipment?.(shipment.id)}
-                                                    title="Delete Shipment"
-                                                    className="p-2 text-[var(--color-text-muted)] hover:text-red-500 transition-colors border border-[var(--sidebar-border)] rounded-lg hover:bg-red-500/5 shadow-sm"
-                                                >
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
+                                            {/* Row Actions: View, Print, Delete */}
+                                            <td className="py-3 px-6 text-center">
+                                                <div className="flex items-center justify-center gap-2">
+                                                    <button
+                                                        onClick={() => onViewShipment?.(shipment.id)}
+                                                        title="View Shipment Details"
+                                                        className="p-2 text-[var(--color-text-muted)] hover:text-primary transition-colors border border-[var(--sidebar-border)] rounded-lg hover:bg-[var(--app-bg)] shadow-sm"
+                                                    >
+                                                        <Eye className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => onPrintLabel?.(shipment.id)}
+                                                        title="Print Shipping Label"
+                                                        className="p-2 text-[var(--color-text-muted)] hover:text-blue-500 transition-colors border border-[var(--sidebar-border)] rounded-lg hover:bg-[var(--app-bg)] shadow-sm"
+                                                    >
+                                                        <Printer className="w-4 h-4" />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => onDeleteShipment?.(shipment.id)}
+                                                        title="Delete Shipment"
+                                                        className="p-2 text-[var(--color-text-muted)] hover:text-red-500 transition-colors border border-[var(--sidebar-border)] rounded-lg hover:bg-red-500/5 shadow-sm"
+                                                    >
+                                                        <Trash2 className="w-4 h-4" />
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
+                            )}
                         </tbody>
                     </table>
                 </div>
             </div>
+
+            {/* Pagination Footer */}
+            {filteredShipments.length > itemsPerPage && (
+                <div className="flex items-center justify-between px-6 py-4 bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-2xl shadow-sm mt-2 select-none">
+                    <span className="text-xs text-[var(--color-text-muted)] font-semibold">
+                        Showing <strong className="text-[var(--color-text-primary)]">{(currentPage - 1) * itemsPerPage + 1}</strong> to <strong className="text-[var(--color-text-primary)]">{Math.min(currentPage * itemsPerPage, filteredShipments.length)}</strong> of <strong className="text-[var(--color-text-primary)]">{filteredShipments.length}</strong> items
+                    </span>
+                    <div className="flex items-center gap-1.5">
+                        <button
+                            disabled={currentPage === 1}
+                            onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                            className="px-3 py-1.5 rounded-lg border border-[var(--sidebar-border)] bg-[var(--app-bg)] text-xs font-bold text-[var(--color-text-muted)] hover:text-primary transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                            Previous
+                        </button>
+                        <button
+                            disabled={currentPage * itemsPerPage >= filteredShipments.length}
+                            onClick={() => setCurrentPage(prev => prev + 1)}
+                            className="px-3 py-1.5 rounded-lg border border-[var(--sidebar-border)] bg-[var(--app-bg)] text-xs font-bold text-[var(--color-text-muted)] hover:text-primary transition-all disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                            Next
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

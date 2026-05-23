@@ -7,11 +7,7 @@ export { CustomerShipmentsTable } from './CustomerShipmentsTable';
 export { AdminShipmentsTable } from './AdminShipmentsTable';
 export { TrackingModal, TrackingModal as TrackingDetailsModal } from './TrackingDetailsModal';
 export { RecentShipmentsWidget } from './RecentShipmentsWidget';
-<<<<<<< Updated upstream
-export type { ShipmentItem as CustomerShipmentItem } from './CustomerShipmentsTable';
-=======
 export { ParcelChart } from './ParcelChart';
 export { TopCustomersWidget } from './TopCustomersWidget';
-export type { ShipmentItem as CustomerShipmentItem } from './ShipmentsTable';
->>>>>>> Stashed changes
+export type { ShipmentItem as CustomerShipmentItem } from './CustomerShipmentsTable';
 export type { ShipmentItem as AdminShipmentItem, ShipmentItem } from './AdminShipmentsTable';

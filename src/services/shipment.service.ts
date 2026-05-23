@@ -44,11 +44,12 @@ const mapShipment = (
         weight: `${shipment.weight} kg`,
         status: getMappedStatus(shipment.status),
         date: shipment.created_at.split("T")[0],
+        customerName: shipment.customer_name,
+        customerPhoneNumber: shipment.customer_phone_number,
+        customerAddress: shipment.customer_address,
     };
 };
 
-<<<<<<< Updated upstream
-=======
 export const getAdminShipmentsApi = async (page: number = 1, limit: number = 10, tracking?: string): Promise<Shipment[]> => {
     const response = await API.get<GetShipmentsResponse>(
         "/admin/get-shipment",
@@ -63,10 +64,9 @@ export const getAdminShipmentsApi = async (page: number = 1, limit: number = 10,
     return response.data.data.map(mapShipment);
 };
 
->>>>>>> Stashed changes
 export const getCustomerShipmentsApi = async (tracking?: string): Promise<Shipment[]> => {
     const response = await API.get<GetShipmentsResponse>(
-        "/shipments/get-shipment",
+        "/shipments/get-my-shipment",
         {
             params: tracking ? { tracking } : undefined,
         }
@@ -87,11 +87,7 @@ export const trackShipmentApi = async (tracking: string): Promise<TrackingHistor
     );
     return response.data.data;
 };
-<<<<<<< Updated upstream
-=======
 
 export const updateShipmentStatusApi = async (id: string, status: string): Promise<any> => {
     return API.patch(`/admin/update-shipment/${id}/status`, { status });
 };
-
->>>>>>> Stashed changes
