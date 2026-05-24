@@ -139,6 +139,10 @@ export const useAdminShipments = () => {
                         s.id === id ? { ...s, status: newStatus as Shipment["status"] } : s
                     )
                 );
+                showToast(
+                    `Shipment status updated to "${statusMap[newStatus]}" successfully!`,
+                    "success"
+                );
                 if (existing?.trackingNumber) {
                     queryClient.invalidateQueries({ queryKey: ["tracking-details", existing.trackingNumber] });
                 }

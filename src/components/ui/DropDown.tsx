@@ -5,6 +5,7 @@ export interface DropdownOption {
   value: string;
   label: string;
   icon?: React.ReactNode;
+  disabled?: boolean;
 }
 
 export interface DropdownProps {
@@ -103,11 +104,14 @@ export const Dropdown: React.FC<DropdownProps> = ({
                   <button
                     key={option.value}
                     type="button"
-                    onClick={() => handleSelect(option.value)}
-                    className={`flex items-center gap-2.5 w-full py-2.5 px-4 text-sm font-bold text-left border-none outline-none cursor-pointer transition-all duration-150 ${
+                    disabled={option.disabled}
+                    onClick={() => !option.disabled && handleSelect(option.value)}
+                    className={`flex items-center gap-2.5 w-full py-2.5 px-4 text-sm font-bold text-left border-none outline-none transition-all duration-150 disabled:opacity-40 disabled:cursor-not-allowed ${
                       isSelected
                         ? 'bg-primary/10 text-primary font-bold'
-                        : 'text-slate-700 dark:text-[var(--color-text-primary)] hover:bg-primary/5 hover:text-primary'
+                        : option.disabled
+                          ? 'text-slate-300 dark:text-[var(--color-text-muted)]/30'
+                          : 'text-slate-700 dark:text-[var(--color-text-primary)] hover:bg-primary/5 hover:text-primary'
                     }`}
                   >
                     {option.icon}

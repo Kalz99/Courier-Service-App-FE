@@ -138,7 +138,9 @@ const StatusBadgeSelector: React.FC<{
     disabled?: boolean;
 }> = ({ status, onUpdateStatus, disabled }) => {
     const styleInfo = getStatusStyles(status);
+    const lowerStatus = status.toLowerCase();
 
+    // If non-admin or no update handler is available, render the static pill badge
     if (disabled || !onUpdateStatus) {
         return (
             <div className={`inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-semibold uppercase tracking-wider select-none ${styleInfo.bg} ${styleInfo.text}`}>
@@ -148,20 +150,27 @@ const StatusBadgeSelector: React.FC<{
         );
     }
 
+    const STATUS_PROGRESSION = ['pending', 'in_transit', 'out_for_delivery', 'delivered'];
+    const currentIdx = STATUS_PROGRESSION.indexOf(lowerStatus);
+
     const statuses = [
         { value: 'pending', label: 'Pending', icon: <span className="w-1.5 h-1.5 rounded-full bg-amber-500" /> },
         { value: 'in_transit', label: 'In Transit', icon: <span className="w-1.5 h-1.5 rounded-full bg-indigo-500" /> },
         { value: 'out_for_delivery', label: 'Out For Delivery', icon: <span className="w-1.5 h-1.5 rounded-full bg-blue-500" /> },
         { value: 'delivered', label: 'Delivered', icon: <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" /> }
-    ];
+    ].map((opt) => ({
+        ...opt,
+        disabled: STATUS_PROGRESSION.indexOf(opt.value) <= currentIdx
+    }));
 
     return (
         <div className="w-44">
             <Dropdown
                 options={statuses}
-                selectedValue={status}
+                selectedValue={lowerStatus}
                 onChange={onUpdateStatus}
                 placeholder="Update Status"
+                disabled={lowerStatus === 'delivered'}
             />
         </div>
     );
