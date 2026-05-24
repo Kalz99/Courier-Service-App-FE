@@ -106,8 +106,8 @@ export const Dropdown: React.FC<DropdownProps> = ({
                     onClick={() => handleSelect(option.value)}
                     className={`flex items-center gap-2.5 w-full py-2.5 px-4 text-sm font-bold text-left border-none outline-none cursor-pointer transition-all duration-150 ${
                       isSelected
-                        ? 'bg-[var(--sidebar-active-bg)] dark:bg-[var(--sidebar-active-bg)]/20 text-primary font-bold'
-                        : 'text-slate-700 dark:text-[var(--color-text-primary)] hover:bg-slate-50 dark:hover:bg-[var(--sidebar-active-bg)]/15 hover:text-primary'
+                        ? 'bg-primary/10 text-primary font-bold'
+                        : 'text-slate-700 dark:text-[var(--color-text-primary)] hover:bg-primary/5 hover:text-primary'
                     }`}
                   >
                     {option.icon}

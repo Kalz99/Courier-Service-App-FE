@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, useNavigate } from 'react-router-dom';
 import SideBar from './SideBar';
 import type { LayoutProps } from '../../types/layout.types';
 import useTheme from '../../hooks/useTheme';
 import { useAuth } from '../../context/AuthContext';
+import { LogoutConfirmationModal } from '../ui/LogoutConfirmationModal';
 
 const SunIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
   <svg
@@ -50,6 +51,7 @@ export const Layout: React.FC<LayoutProps> = ({
   const { theme, toggleTheme } = useTheme();
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const sidebarUser = user
     ? {
@@ -63,9 +65,12 @@ export const Layout: React.FC<LayoutProps> = ({
   };
 
   const handleLogout = () => {
-    if (confirm('Are you sure you want to log out?')) {
-      logout();
-    }
+    setIsLogoutModalOpen(true);
+  };
+
+  const handleConfirmLogout = () => {
+    setIsLogoutModalOpen(false);
+    logout();
   };
 
   return (
@@ -103,6 +108,13 @@ export const Layout: React.FC<LayoutProps> = ({
           {children ? children : <Outlet />}
         </div>
       </main>
+
+      {/* Premium Logout Confirmation Modal */}
+      <LogoutConfirmationModal
+        isOpen={isLogoutModalOpen}
+        onClose={() => setIsLogoutModalOpen(false)}
+        onConfirm={handleConfirmLogout}
+      />
     </div>
   );
 };

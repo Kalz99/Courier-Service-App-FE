@@ -2,6 +2,7 @@ import React from 'react';
 import { CustomerRow } from './CustomerRow';
 import { CustomerSkeleton } from './CustomerSkeleton';
 import { CustomerEmptyState } from './CustomerEmptyState';
+import { TablePagination } from '../CustomerShipmentsTable/TablePagination';
 import type { CustomerInfo } from '../../../types/customershipment.types';
 
 export interface CustomersTableProps {
@@ -9,13 +10,25 @@ export interface CustomersTableProps {
     isLoading?: boolean;
     error?: string | null;
     onRefresh?: () => void;
+    currentPage: number;
+    onPageChange: (page: number) => void;
+    totalPages: number;
+    startIndex: number;
+    endIndex: number;
+    totalCustomersCount: number;
 }
 
 export const CustomersTable: React.FC<CustomersTableProps> = React.memo(({
     customers,
     isLoading = false,
     error = null,
-    onRefresh
+    onRefresh,
+    currentPage,
+    onPageChange,
+    totalPages,
+    startIndex,
+    endIndex,
+    totalCustomersCount
 }) => {
     const hasRecords = customers.length > 0;
 
@@ -58,6 +71,18 @@ export const CustomersTable: React.FC<CustomersTableProps> = React.memo(({
                     <CustomerEmptyState />
                 )}
             </div>
+
+            {!isLoading && hasRecords && (
+                <TablePagination
+                    currentPage={currentPage}
+                    onPageChange={onPageChange}
+                    totalPages={totalPages}
+                    startIndex={startIndex}
+                    endIndex={endIndex}
+                    totalShipmentsCount={totalCustomersCount}
+                    label="customers"
+                />
+            )}
         </div>
     );
 });

@@ -6,10 +6,16 @@ import { CustomersTable } from '../components/ui/CustomersTable';
 export const CustomersPage: React.FC = () => {
     const {
         customers,
+        paginatedCustomers,
         loading,
         error,
         searchTerm,
         setSearchTerm,
+        currentPage,
+        setCurrentPage,
+        totalPages,
+        startIndex,
+        endIndex,
         refreshCustomers
     } = useAdminCustomers();
 
@@ -22,7 +28,7 @@ export const CustomersPage: React.FC = () => {
                     <Search className="absolute left-4 top-3.5 h-5 w-5 text-[var(--color-text-muted)]" />
                     <input
                         type="text"
-                        placeholder="Search by customer name, email, phone or address..."
+                        placeholder="Search..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full pl-12 pr-4 py-3.5 bg-[var(--app-bg)] text-sm border border-[var(--sidebar-border)] rounded-xl focus:outline-none focus:border-primary text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)]/70 font-medium"
@@ -32,10 +38,16 @@ export const CustomersPage: React.FC = () => {
 
             {/* Customers Data Table */}
             <CustomersTable
-                customers={customers}
+                customers={paginatedCustomers}
                 isLoading={loading}
                 error={error}
                 onRefresh={refreshCustomers}
+                currentPage={currentPage}
+                onPageChange={setCurrentPage}
+                totalPages={totalPages}
+                startIndex={startIndex}
+                endIndex={endIndex}
+                totalCustomersCount={customers.length}
             />
         </div>
     );

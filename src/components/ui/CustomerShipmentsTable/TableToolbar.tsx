@@ -33,7 +33,7 @@ export const TableToolbar: React.FC<TableToolbarProps> = React.memo(({
                 <input
                     type="text"
                     aria-label="Search shipments"
-                    placeholder="Search by tracking #, recipient name, address..."
+                    placeholder="Search..."
                     value={searchTerm}
                     onChange={(e) => onSearchChange(e.target.value)}
                     className="w-full pl-10 pr-4 py-2.5 bg-[var(--app-bg)] text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)]/60 text-sm border border-[var(--sidebar-border)] rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-[var(--color-primary-glow)] transition-all duration-200"

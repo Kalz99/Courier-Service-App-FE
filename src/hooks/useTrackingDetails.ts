@@ -14,7 +14,7 @@ export const useTrackingDetails = (trackingNumber: string | null, isOpen: boolea
             return trackShipmentApi(trackingNumber);
         },
         enabled: Boolean(isOpen && trackingNumber),
-        staleTime: 1000 * 60 * 5, // 5 minutes
+        staleTime: 1000 * 30, // 30 seconds cache window to prevent rapid-click server overloading
         refetchOnWindowFocus: false,
         retry: 1,
     });

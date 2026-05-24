@@ -8,6 +8,7 @@ export interface TablePaginationProps {
     startIndex: number;
     endIndex: number;
     totalShipmentsCount: number;
+    label?: string;
 }
 
 /** Build the page number list with ellipsis for large page counts. */
@@ -35,7 +36,8 @@ export const TablePagination: React.FC<TablePaginationProps> = React.memo(({
     totalPages,
     startIndex,
     endIndex,
-    totalShipmentsCount
+    totalShipmentsCount,
+    label = 'shipments'
 }) => {
     if (totalShipmentsCount === 0) return null;
 
@@ -48,11 +50,11 @@ export const TablePagination: React.FC<TablePaginationProps> = React.memo(({
     );
 
     return (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4.5 bg-[var(--app-bg)]/35 border-t border-[var(--sidebar-border)] select-none">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 px-6 py-4.5 bg-[var(--app-bg)]/35 border-t border-[var(--sidebar-border)] select-none rounded-b-[24px]">
             <span className="text-xs font-medium text-[var(--color-text-muted)]">
                 Showing <span className="font-bold text-[var(--color-text-primary)]">{startIndex}</span> to{' '}
                 <span className="font-bold text-[var(--color-text-primary)]">{endIndex}</span> of{' '}
-                <span className="font-bold text-[var(--color-text-primary)]">{totalShipmentsCount}</span> shipments
+                <span className="font-bold text-[var(--color-text-primary)]">{totalShipmentsCount}</span> {label}
             </span>
 
             {totalPages > 1 && (

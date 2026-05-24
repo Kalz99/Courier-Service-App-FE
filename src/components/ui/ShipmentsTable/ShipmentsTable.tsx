@@ -235,7 +235,7 @@ export const ShipmentsTable: React.FC<ShipmentsTableProps> = React.memo(({
                             <input
                                 type="text"
                                 aria-label="Search shipments"
-                                placeholder={isAdmin ? "Search tracking #, recipient, customer..." : "Search by tracking #, recipient name, address..."}
+                                placeholder="Search..."
                                 value={searchTerm}
                                 onChange={(e) => onSearchChange(e.target.value)}
                                 className="w-full pl-10 pr-4 py-2.5 bg-[var(--app-bg)] text-[var(--color-text-primary)] placeholder-[var(--color-text-muted)]/60 text-sm border border-[var(--sidebar-border)] rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-[var(--color-primary-glow)] transition-all duration-200 font-semibold"
@@ -312,10 +312,10 @@ export const ShipmentsTable: React.FC<ShipmentsTableProps> = React.memo(({
             </div>
 
             {/* Table Core */}
-            <div className="w-full bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-[24px] shadow-[var(--sidebar-shadow)] overflow-hidden">
-                <div className="overflow-x-auto w-full">
+            <div className="w-full bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-[24px] shadow-[var(--sidebar-shadow)] overflow-hidden lg:overflow-visible">
+                <div className="overflow-x-auto lg:overflow-visible w-full">
                     {isLoading || hasRecords ? (
-                        <table className="w-full min-w-[1100px] border-collapse text-left text-sm select-none">
+                        <table className="w-full min-w-[1100px] border-collapse text-left text-sm select-none rounded-t-[24px]">
                             <thead>
                                 <tr className="border-b border-[var(--sidebar-border)] bg-[var(--app-bg)]/40">
                                     <th className={`py-4.5 px-6 font-bold text-xs uppercase tracking-wider text-[var(--color-text-muted)] ${isAdmin ? 'w-[14%]' : 'w-[18%]'}`}>

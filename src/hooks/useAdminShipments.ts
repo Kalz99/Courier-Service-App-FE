@@ -8,11 +8,13 @@ import {
 import { getAllAdminShipmentsApi, updateShipmentStatusApi } from "../services/shipment.service";
 import type { Shipment } from "../types/customershipment.types";
 import { useToast } from "../context/ToastContext";
+import { useQueryClient } from "@tanstack/react-query";
 
 const ITEMS_PER_PAGE = 10;
 
 export const useAdminShipments = () => {
     const { showToast } = useToast();
+    const queryClient = useQueryClient();
 
     // ─── Raw server data ──────────────────────────────────────────────
     const [allShipments, setAllShipments] = useState<Shipment[]>([]);
@@ -137,6 +139,9 @@ export const useAdminShipments = () => {
                         s.id === id ? { ...s, status: newStatus as Shipment["status"] } : s
                     )
                 );
+                if (existing?.trackingNumber) {
+                    queryClient.invalidateQueries({ queryKey: ["tracking-details", existing.trackingNumber] });
+                }
             } catch (err: any) {
                 showToast(
                     err?.response?.data?.message ?? "Failed to update status.",
@@ -144,7 +149,7 @@ export const useAdminShipments = () => {
                 );
             }
         },
-        [allShipments, showToast]
+        [allShipments, showToast, queryClient]
     );
 
     // ─── Clipboard helpers ────────────────────────────────────────────
