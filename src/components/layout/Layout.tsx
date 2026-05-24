@@ -78,7 +78,7 @@ export const Layout: React.FC<LayoutProps> = ({
       />
 
       {/* Main Page Area */}
-      <main className="grow h-[calc(100vh-2rem)] my-4 mr-4 ml-4 overflow-y-auto flex flex-col">
+      <main className="grow h-screen py-4 pr-4 pl-4 overflow-y-auto flex flex-col">
         {/* Top Floating Action Card Bar */}
         <header className="flex flex-row items-center justify-between w-full py-4 px-6 md:px-8 mb-6 bg-[var(--sidebar-bg)] border border-[var(--sidebar-border)] rounded-[24px] shadow-[var(--sidebar-shadow)] transition-all duration-250 shrink-0">
           <span className="text-[17px] md:text-[19px] font-bold text-[var(--color-text-primary)] select-none">

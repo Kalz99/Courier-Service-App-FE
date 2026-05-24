@@ -27,9 +27,9 @@ export const SideBar: React.FC<SideBarProps> = ({
   const filteredRoutes = sidebarRoutes.filter((route) => {
     if (isCustomer) {
       // Customers should only see Dashboard, My Shipments (/customershipments), and Settings
-      return route.path !== '/shipments';
+      return route.path !== '/shipments' && route.path !== '/customers';
     } else {
-      // Admins should only see Dashboard, Shipments (/shipments), and Settings
+      // Admins should only see Dashboard, Shipments (/shipments), Customers (/customers), and Settings
       return route.path !== '/customershipments';
     }
   });
