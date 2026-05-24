@@ -10,7 +10,7 @@ export const useRecentShipments = () => {
     } = useQuery<Shipment[], Error>({
         queryKey: ['recent-shipments'],
         queryFn: () => getCustomerShipmentsApi(),
-        staleTime: 1000 * 60 * 5,
+        staleTime: 0,
         refetchOnWindowFocus: false,
         retry: 1,
     });

@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { createShipmentApi } from '../services/newshipment.service';
 import { useToast } from '../context/ToastContext';
+import { useQueryClient } from '@tanstack/react-query';
 
 
 import type { ShipmentFormData, ShipmentFormErrors } from "../types/shipment.types";
@@ -50,6 +51,12 @@ const extractErrorMessage = (error: unknown): string => {
 export const useAddShipmentForm = () => {
   const { user } = useAuth();
   const { showToast } = useToast();
+  const queryClient = useQueryClient();
+
+  const senderPhoneNumber =
+    user?.phoneNumber ||
+    (user as unknown as Record<string, string> | null)?.['phone'] ||
+    '';
 
   const [formData, setFormData] = useState<ShipmentFormData>(INITIAL_FORM_DATA);
   const [errors, setErrors] = useState<ShipmentFormErrors>(INITIAL_ERRORS);
@@ -132,6 +139,11 @@ export const useAddShipmentForm = () => {
 
       const response = await createShipmentApi(payload);
       showToast(response.data?.message || 'Shipment created successfully', 'success');
+      
+      // Invalidate the cache for dashboard stats and recent shipment activities
+      queryClient.invalidateQueries({ queryKey: ['recent-shipments'] });
+      queryClient.invalidateQueries({ queryKey: ['my-status-counts'] });
+      
       resetForm();
     } catch (error: unknown) {
       showToast(extractErrorMessage(error), 'error');
@@ -142,6 +154,7 @@ export const useAddShipmentForm = () => {
 
   return {
     user,
+    senderPhoneNumber,
     formData,
     errors,
     isSubmitting,

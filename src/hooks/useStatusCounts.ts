@@ -37,7 +37,7 @@ export const useAdminStatusCounts = () => {
     const { data = DEFAULT_COUNTS, isLoading, error } = useQuery<StatusCounts, Error>({
         queryKey: ['admin-status-counts'],
         queryFn: fetchAdminStatusCounts,
-        staleTime: 1000 * 60 * 5,
+        staleTime: 0,
         refetchOnWindowFocus: false,
         retry: 1,
     });
@@ -49,7 +49,7 @@ export const useMyStatusCounts = () => {
     const { data = DEFAULT_COUNTS, isLoading, error } = useQuery<StatusCounts, Error>({
         queryKey: ['my-status-counts'],
         queryFn: fetchMyStatusCounts,
-        staleTime: 1000 * 60 * 5,
+        staleTime: 0,
         refetchOnWindowFocus: false,
         retry: 1,
     });

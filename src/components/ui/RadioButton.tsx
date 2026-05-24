@@ -78,7 +78,7 @@ export const RadioButton: React.FC<RadioButtonProps> = ({
       <div className="flex flex-col text-left justify-center min-w-0 flex-1 pr-2">
         {/* Text Label / Name */}
         <span
-          className={`text-sm font-medium tracking-wide transition-colors duration-200 whitespace-nowrap ${
+          className={`text-xs font-medium tracking-wide transition-colors duration-200 whitespace-nowrap ${
             checked ? 'text-primary' : 'text-[var(--color-text-primary)]'
           }`}
         >
@@ -88,7 +88,7 @@ export const RadioButton: React.FC<RadioButtonProps> = ({
         {/* Optional Description / Other word */}
         {description && (
           <span
-            className={`text-xs mt-0.5 leading-snug font-normal transition-colors duration-200 whitespace-nowrap ${
+            className={`text-[10px] mt-0.5 leading-snug font-normal transition-colors duration-200 whitespace-nowrap ${
               checked ? 'text-primary/75' : 'text-[var(--color-text-muted)]'
             }`}
           >

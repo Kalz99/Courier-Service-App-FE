@@ -146,6 +146,10 @@ export const useAdminShipments = () => {
                 if (existing?.trackingNumber) {
                     queryClient.invalidateQueries({ queryKey: ["tracking-details", existing.trackingNumber] });
                 }
+                queryClient.invalidateQueries({ queryKey: ["admin-status-counts"] });
+                queryClient.invalidateQueries({ queryKey: ["my-status-counts"] });
+                queryClient.invalidateQueries({ queryKey: ["recent-shipments"] });
+                queryClient.invalidateQueries({ queryKey: ["top-customers"] });
             } catch (err: any) {
                 showToast(
                     err?.response?.data?.message ?? "Failed to update status.",

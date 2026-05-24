@@ -15,6 +15,7 @@ const SHIPMENT_TYPE_OPTIONS: DropdownOption[] = [
 export const AddShipment: React.FC = () => {
     const {
         user,
+        senderPhoneNumber,
         formData,
         errors,
         isSubmitting,
@@ -51,7 +52,7 @@ export const AddShipment: React.FC = () => {
                             name="senderMobile"
                             label="Sender's Mobile"
                             placeholder="Enter sender's phone number"
-                            value={user?.phoneNumber || ''}
+                            value={senderPhoneNumber}
                             disabled
                             className="py-2 px-3 pl-10 text-xs rounded-xl md:py-2.5 md:pl-11 md:text-sm transition-all bg-slate-50 cursor-not-allowed opacity-80"
                             icon={<Phone className="w-3.5 h-3.5 md:w-4 md:h-4 text-[var(--color-text-muted)]" />}

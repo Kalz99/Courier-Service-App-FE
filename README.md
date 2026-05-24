@@ -20,6 +20,7 @@
 
 * [Core Features](#-core-features)
 * [Technology Stack](#-technology-stack)
+* [Dependencies & Packages](#-dependencies--packages)
 * [Project Structure](#-project-structure)
 * [Pages & Routing](#-pages--routing)
 * [Component Architecture](#-component-architecture)
@@ -59,6 +60,31 @@
 | HTTP Client | Axios |
 | Icons | Lucide React |
 | Charts | Recharts |
+
+---
+
+# 📦 Dependencies & Packages
+
+Here is a breakdown of all frontend dependencies configured in [`package.json`](file:///d:/Github/Courier-Service-App/frontend/package.json):
+
+### Core Dependencies
+
+* **`react`** (`^19.2.6`) & **`react-dom`** (`^19.2.6`): Core libraries for rendering the reactive component hierarchy to the DOM.
+* **`react-router-dom`** (`^7.15.1`): Declarative client-side routing library supporting nested routes and layout structures.
+* **`@tanstack/react-query`** (`^5.100.13`): Client state management library for managing server queries, mutation states, background caching, and automatic invalidation.
+* **`axios`** (`^1.16.1`): Promise-based HTTP client for executing asynchronous requests to the backend REST API.
+* **`tailwindcss`** (`^4.3.0`) & **`@tailwindcss/vite`** (`^4.3.0`): Utility-first CSS styling system with direct Vite integration.
+* **`lucide-react`** (`^1.16.0`): Icon library containing high-quality SVG icons for dashboards and navigations.
+
+### Development Dependencies
+
+* **`vite`** (`^8.0.12`): High-performance build tool and dev server featuring fast Hot Module Replacement (HMR).
+* **`@vitejs/plugin-react`** (`^6.0.1`): Official Vite plugin supporting React features and Fast Refresh.
+* **`typescript`** (`~6.0.2`): Static typing and compilation for TypeScript source code.
+* **`eslint`** (`^10.3.0`), **`@eslint/js`** (`^10.0.1`), **`eslint-plugin-react-hooks`** (`^7.1.1`), & **`eslint-plugin-react-refresh`** (`^0.5.2`): Coding standard rules, custom hooks patterns validation, and Hot Reload enforcement.
+* **`typescript-eslint`** (`^8.59.2`): Integrates TypeScript compiler type-checking with the ESLint code analysis pipeline.
+* **`globals`** (`^17.6.0`): Configures environment globals (like `window`, `document`) for ESLint.
+* **Type definitions** (`@types/*`): Provides TypeScript support for third-party libraries (`@types/react`, `@types/react-dom`, `@types/node`).
 
 ---
 
@@ -280,14 +306,35 @@ The application uses Tailwind CSS 4 with custom CSS variables for theme manageme
 
 ```bash
 git clone https://github.com/Kalz99/Courier-Service-App-FE.git
+cd Courier-Service-App-FE
 ```
 
 ---
 
 ## 2. Install Dependencies
 
+The frontend project utilizes several key modules for UI rendering, routing, state management, and styling. You can install all dependencies automatically or step-by-step.
+
+### Option A: Standard Installation (Recommended)
+
+Run the following command from the `frontend` root directory to install all dependencies specified in `package.json`:
+
 ```bash
 npm install
+```
+
+### Option B: Individual Installations
+
+If you prefer to install the packages manually or need to set up the environment from scratch:
+
+#### 1. Core Production Dependencies
+```bash
+npm install react react-dom react-router-dom @tanstack/react-query axios tailwindcss @tailwindcss/vite lucide-react
+```
+
+#### 2. Development & Type Definitions
+```bash
+npm install -D vite @vitejs/plugin-react typescript eslint @eslint/js eslint-plugin-react-hooks eslint-plugin-react-refresh typescript-eslint globals @types/react @types/react-dom @types/node
 ```
 
 ---
